@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Simulator</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121935;
+      --panel-2:#182145;
+      --border:rgba(255,255,255,.08);
+      --text:#eef2ff;
+      --muted:#aab4d6;
+      --accent:#7c9cff;
+      --accent-2:#5eead4;
+      --good:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124,156,255,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(94,234,212,.12), transparent 22%),
+        linear-gradient(180deg, #0a0f1f 0%, #0b1020 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .app{
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+
+    .hero{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:24px;
+      margin-bottom:24px;
+      flex-wrap:wrap;
+    }
+
+    .hero h1{
+      margin:0 0 8px;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height:1.05;
+      letter-spacing:-0.03em;
+    }
+
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      max-width:760px;
+      font-size:16px;
+    }
+
+    .badge-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .badge{
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      color:#dce5ff;
+      font-size:13px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:18px;
+    }
+
+    @media (max-width: 1100px){
+      .layout{ grid-template-columns: 1fr; }
+    }
+
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-header{
+      padding:18px 18px 12px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .panel-header h2{
+      margin:0;
+      font-size:18px;
+      letter-spacing:-0.02em;
+    }
+
+    .panel-header p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .panel-body{
+      padding:18px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    @media (max-width: 800px){
+      .grid-2{ grid-template-columns:1fr; }
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      color:#dfe7ff;
+      margin-bottom:8px;
+      font-weight:600;
+    }
+
+    textarea, input{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      padding:14px 14px;
+      font-size:14px;
+      outline:none;
+      transition:.2s ease;
+    }
+
+    textarea{
+      min-height:170px;
+      resize:vertical;
+      line-height:1.5;
+    }
+
+    input{
+      height:48px;
+    }
+
+    textarea:focus, input:focus{
+      border-color: rgba(124,156,255,.7);
+      box-shadow:0 0 0 4px rgba(124,156,255,.14);
+      background: rgba(255,255,255,.055);
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:12px 16px;
+      font-size:14px;
+      font-weight:700;
+      transition: transform .15s ease, opacity .2s ease, box-shadow .2s ease;
+    }
+
+    button:hover{ transform: translateY(-1px); }
+    button:active{ transform: translateY(0); }
+
+    .primary{
+      background: linear-gradient(135deg, var(--accent), #9f7cff);
+      color:white;
+      box-shadow:0 10px 30px rgba(124,156,255,.25);
+    }
+
+    .secondary{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+
+    .success{
+      background: linear-gradient(135deg, #10b981, #34d399);
+      color:#032217;
+    }
+
+    .stepper{
+      display:grid;
+      gap:12px;
+    }
+
+    .step{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+      transition:.25s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .step::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:0;
+      width:4px;
+      background:transparent;
+      transition:.25s ease;
+    }
+
+    .step.active{
+      background:linear-gradient(180deg, rgba(124,156,255,.10), rgba(124,156,255,.03));
+      border-color:rgba(124,156,255,.28);
+    }
+
+    .step.active::before{
+      background:linear-gradient(180deg, var(--accent), var(--accent-2));
+    }
+
+    .step.done{
+      border-color:rgba(52,211,153,.28);
+    }
+
+    .step.done::before{
+      background:linear-gradient(180deg, var(--good), var(--accent-2));
+    }
+
+    .step-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:8px;
+    }
+
+    .step-num{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      font-size:13px;
+      font-weight:700;
+      flex:0 0 auto;
+    }
+
+    .step-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      font-size:15px;
+      letter-spacing:-0.01em;
+    }
+
+    .status{
+      font-size:12px;
+      color:var(--muted);
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      padding:5px 8px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    .step p{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .content-box{
+      background:rgba(8,12,26,.6);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      font-size:13px;
+      color:#dbe4ff;
+      line-height:1.5;
+      max-height:220px;
+      overflow:auto;
+      white-space:pre-wrap;
+    }
+
+    .tiny{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .chunk-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .chunk{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(255,255,255,.025);
+    }
+
+    .chunk strong{
+      color:#fff;
+    }
+
+    .chunk-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 8px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+    }
+
+    .sim-bar-wrap{
+      height:10px;
+      width:100%;
+      background:rgba(255,255,255,.06);
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:8px;
+    }
+
+    .sim-bar{
+      height:100%;
+      border-radius:999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      width:0%;
+      transition:width .35s ease;
+    }
+
+    .vector-grid{
+      display:grid;
+      grid-template-columns:repeat(5, 1fr);
+      gap:6px;
+      margin-top:8px;
+    }
+
+    .vcell{
+      height:24px;
+      border-radius:8px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.04);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      color:#d5e0ff;
+    }
+
+    .answer{
+      font-size:14px;
+      line-height:1.65;
+      color:#eef4ff;
+    }
+
+    .highlight{
+      color:#fff;
+      background:rgba(124,156,255,.18);
+      border:1px solid rgba(124,156,255,.35);
+      padding:2px 6px;
+      border-radius:8px;
+    }
+
+    .footer-note{
+      margin-top:14px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .legend{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .legend .pill span.dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      display:inline-block;
+    }
+
+    .doc-tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .doc-tab{
+      padding:9px 12px;
+      border-radius:12px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      color:#dfe8ff;
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .doc-tab.active{
+      background:rgba(124,156,255,.18);
+      border-color:rgba(124,156,255,.35);
+    }
+
+    .summary-strip{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+
+    @media (max-width: 900px){
+      .summary-strip{ grid-template-columns:repeat(2, 1fr); }
+    }
+
+    .metric{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .metric .label{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .metric .value{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:-0.03em;
+    }
+
+    .subtle{
+      color:var(--muted);
+      font-size:12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="hero">
+      <div>
+        <h1>RAG Simulator</h1>
+        <p>
+          Learn Retrieval-Augmented Generation step by step. This simulator shows how documents are ingested,
+          chunked, “embedded” (simulated), searched at query time, and injected into the prompt so the LLM can answer.
+        </p>
+        <div class="badge-row">
+          <div class="badge">Single HTML file</div>
+          <div class="badge">Modern UI</div>
+          <div class="badge">RAG pipeline visualized</div>
+          <div class="badge">No backend needed</div>
+        </div>
+      </div>
+
+      <div class="panel" style="min-width:280px; max-width:360px; width:100%;">
+        <div class="panel-body">
+          <div class="tiny" style="margin-bottom:8px;">What this teaches</div>
+          <div class="legend">
+            <div class="pill"><span class="dot" style="background:var(--accent)"></span> Retrieval at query time</div>
+            <div class="pill"><span class="dot" style="background:var(--accent-2)"></span> Prompt augmentation</div>
+            <div class="pill"><span class="dot" style="background:var(--good)"></span> Grounded answer</div>
+          </div>
+          <div class="footer-note">
+            This uses a simplified similarity method so you can understand the concept clearly. It simulates embeddings rather than using a real vector database.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>1) Source documents + question</h2>
+            <p>These represent your external knowledge source: PDFs, docs, database content, or API responses.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="doc-tabs" id="docTabs"></div>
+
+          <div class="grid-2">
+            <div>
+              <label for="docInput">External knowledge source</label>
+              <textarea id="docInput"></textarea>
+            </div>
+            <div>
+              <label for="questionInput">User question</label>
+              <input id="questionInput" type="text" placeholder="Ask a question about the source data..." />
+              <div class="summary-strip">
+                <div class="metric">
+                  <div class="label">Docs loaded</div>
+                  <div class="value" id="metricDocs">3</div>
+                </div>
+                <div class="metric">
+                  <div class="label">Chunks</div>
+                  <div class="value" id="metricChunks">0</div>
+                </div>
+                <div class="metric">
+                  <div class="label">Top matches</div>
+                  <div class="value" id="metricMatches">0</div>
+                </div>
+                <div class="metric">
+                  <div class="label">Prompt context</div>
+                  <div class="value" id="metricContext">0</div>
+                </div>
+              </div>
+
+              <div class="controls">
+                <button class="primary" id="runBtn">Run RAG simulation</button>
+                <button class="secondary" id="stepBtn">Step through</button>
+                <button class="secondary" id="resetBtn">Reset</button>
+                <button class="success" id="demoBtn">Load demo</button>
+              </div>
+
+              <div class="footer-note">
+                Tip: edit the document and question, then run again. You will see how retrieval changes based on the query.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>2) RAG pipeline</h2>
+            <p>Watch each stage in order.</p>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="stepper">
+            <div class="step" id="step1">
+              <div class="step-top">
+                <div class="step-title"><span class="step-num">1</span>Ingestion</div>
+                <div class="status" id="status1">waiting</div>
+              </div>
+              <p>The system receives external data. In real life this may come from PDFs, docs, databases, websites, or APIs.</p>
+              <div class="content-box" id="ingestBox">No source loaded yet.</div>
+            </div>
+
+            <div class="step" id="step2">
+              <div class="step-top">
+                <div class="step-title"><span class="step-num">2</span>Chunking</div>
+                <div class="status" id="status2">waiting</div>
+              </div>
+              <p>The source is split into smaller chunks so retrieval can find the most relevant parts instead of sending the entire document.</p>
+              <div class="content-box" id="chunkBox">Chunks will appear here.</div>
+            </div>
+
+            <div class="step" id="step3">
+              <div class="step-top">
+                <div class="step-title"><span class="step-num">3</span>Embeddings / vector store (simulated)</div>
+                <div class="status" id="status3">waiting</div>
+              </div>
+              <p>Real RAG systems convert chunks into embeddings and store them in a vector database. Here we simulate that so you can understand the idea.</p>
+              <div class="content-box" id="vectorBox">Vector representations will appear here.</div>
+            </div>
+
+            <div class="step" id="step4">
+              <div class="step-top">
+                <div class="step-title"><span class="step-num">4</span>Retrieve relevant chunks</div>
+                <div class="status" id="status4">waiting</div>
+              </div>
+              <p>At query time, the system compares the user question to the stored chunks and selects the most relevant matches.</p>
+              <div class="content-box" id="retrieveBox">Similarity results will appear here.</div>
+            </div>
+
+            <div class="step" id="step5">
+              <div class="step-top">
+                <div class="step-title"><span class="step-num">5</span>Augmented prompt</div>
+                <div class="status" id="status5">waiting</div>
+              </div>
+              <p>The retrieved chunks are inserted into the prompt as context for the LLM.</p>
+              <div class="content-box" id="promptBox">Prompt will appear here.</div>
+            </div>
+
+            <div class="step" id="step6">
+              <div class="step-top">
+                <div class="step-title"><span class="step-num">6</span>Generated answer</div>
+                <div class="status" id="status6">waiting</div>
+              </div>
+              <p>The LLM answers using the retrieved context instead of relying only on its internal training.</p>
+              <div class="content-box answer" id="answerBox">Answer will appear here.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const demoDocs = [
+      {
+        name: "Product policy PDF",
+        text: `Refund Policy
+
+Customers may request a refund within 30 days of purchase.
+Refund requests must be submitted through the customer support portal.
+Digital products are non-refundable after download unless the file is defective.
+Enterprise contracts follow separate terms negotiated in the MSA.
+Priority support is available only to Pro and Enterprise customers.
+Business hours for support are Monday through Friday, 9 AM to 6 PM Eastern Time.`
+      },
+      {
+        name: "Travel knowledge doc",
+        text: `Travel Guide
+
+Rome is known for the Colosseum, Roman Forum, and Vatican City.
+The best time to visit is spring or early fall for milder weather.
+Public transit includes buses, trams, and the Metro.
+Tourists should validate transit tickets before boarding.
+Many museums are closed or have limited hours on certain holidays.
+Local pickpocket risk is higher in crowded tourist areas.`
+      },
+      {
+        name: "API response / database row dump",
+        text: `Customer Plan Data
+
+User: Olivia
+Plan: Pro
+Renewal Date: 2026-04-12
+Features: analytics dashboard, export tools, priority support
+
+User: Malik
+Plan: Free
+Renewal Date: N/A
+Features: basic dashboard only
+
+User: Sara
+Plan: Enterprise
+Renewal Date: 2026-09-30
+Features: SSO, audit logs, dedicated CSM, priority support`
+      }
+    ];
+
+    const docTabs = document.getElementById("docTabs");
+    const docInput = document.getElementById("docInput");
+    const questionInput = document.getElementById("questionInput");
+
+    const runBtn = document.getElementById("runBtn");
+    const stepBtn = document.getElementById("stepBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const demoBtn = document.getElementById("demoBtn");
+
+    const ingestBox = document.getElementById("ingestBox");
+    const chunkBox = document.getElementById("chunkBox");
+    const vectorBox = document.getElementById("vectorBox");
+    const retrieveBox = document.getElementById("retrieveBox");
+    const promptBox = document.getElementById("promptBox");
+    const answerBox = document.getElementById("answerBox");
+
+    const metricDocs = document.getElementById("metricDocs");
+    const metricChunks = document.getElementById("metricChunks");
+    const metricMatches = document.getElementById("metricMatches");
+    const metricContext = document.getElementById("metricContext");
+
+    let activeDocIndex = 0;
+    let currentState = null;
+    let stepModeIndex = 0;
+
+    function renderTabs() {
+      docTabs.innerHTML = "";
+      demoDocs.forEach((doc, index) => {
+        const el = document.createElement("div");
+        el.className = "doc-tab" + (index === activeDocIndex ? " active" : "");
+        el.textContent = doc.name;
+        el.addEventListener("click", () => {
+          activeDocIndex = index;
+          docInput.value = demoDocs[index].text;
+          questionInput.value = defaultQuestionForDoc(index);
+          renderTabs();
+          resetPipeline();
+        });
+        docTabs.appendChild(el);
+      });
+    }
+
+    function defaultQuestionForDoc(index){
+      if(index === 0) return "How long do customers have to request a refund and how do they submit it?";
+      if(index === 1) return "What is the best time to visit Rome and what should tourists watch out for?";
+      return "Which users have priority support and what plans are they on?";
+    }
+
+    function loadDemo(){
+      activeDocIndex = 0;
+      renderTabs();
+      docInput.value = demoDocs[0].text;
+      questionInput.value = defaultQuestionForDoc(0);
+      resetPipeline();
+    }
+
+    function resetPipeline(){
+      currentState = null;
+      stepModeIndex = 0;
+
+      ingestBox.textContent = "No source loaded yet.";
+      chunkBox.textContent = "Chunks will appear here.";
+      vectorBox.textContent = "Vector representations will appear here.";
+      retrieveBox.textContent = "Similarity results will appear here.";
+      promptBox.textContent = "Prompt will appear here.";
+      answerBox.textContent = "Answer will appear here.";
+
+      metricChunks.textContent = "0";
+      metricMatches.textContent = "0";
+      metricContext.textContent = "0";
+
+      [1,2,3,4,5,6].forEach(i => {
+        document.getElementById("step" + i).className = "step";
+        document.getElementById("status" + i).textContent = "waiting";
+      });
+    }
+
+    function setStepState(stepNum, state){
+      const step = document.getElementById("step" + stepNum);
+      const status = document.getElementById("status" + stepNum);
+      step.classList.remove("active", "done");
+      if(state === "active"){
+        step.classList.add("active");
+        status.textContent = "running";
+      } else if(state === "done"){
+        step.classList.add("done");
+        status.textContent = "done";
+      } else {
+        status.textContent = "waiting";
+      }
+    }
+
+    function tokenize(text){
+      return (text.toLowerCase().match(/[a-z0-9]+/g) || []).filter(Boolean);
+    }
+
+    function sentenceSplit(text){
+      return text
+        .replace(/\n+/g, " ")
+        .split(/(?<=[.!?])\s+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    function chunkText(text, maxSentences = 2){
+      const sentences = sentenceSplit(text);
+      const chunks = [];
+      for(let i = 0; i < sentences.length; i += maxSentences){
+        chunks.push(sentences.slice(i, i + maxSentences).join(" "));
+      }
+      return chunks;
+    }
+
+    function unique(arr){
+      return [...new Set(arr)];
+    }
+
+    function buildVocabulary(chunks, question){
+      const words = unique([...chunks.flatMap(tokenize), ...tokenize(question)])
+        .filter(w => w.length > 2)
+        .slice(0, 50);
+      return words;
+    }
+
+    function makeVector(text, vocabulary){
+      const tokens = tokenize(text);
+      return vocabulary.map(word => tokens.filter(t => t === word).length);
+    }
+
+    function cosineSimilarity(vecA, vecB){
+      let dot = 0, magA = 0, magB = 0;
+      for(let i = 0; i < vecA.length; i++){
+        dot += vecA[i] * vecB[i];
+        magA += vecA[i] * vecA[i];
+        magB += vecB[i] * vecB[i];
+      }
+      if(magA === 0 || magB === 0) return 0;
+      return dot / (Math.sqrt(magA) * Math.sqrt(magB));
+    }
+
+    function topKeywords(text, limit = 5){
+      const counts = {};
+      tokenize(text)
+        .filter(w => w.length > 2)
+        .forEach(w => counts[w] = (counts[w] || 0) + 1);
+
+      return Object.entries(counts)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([word]) => word);
+    }
+
+    function simulateRAG(){
+      const doc = docInput.value.trim();
+      const question = questionInput.value.trim();
+
+      if(!doc || !question){
+        alert("Please provide both a document and a question.");
+        return null;
+      }
+
+      const chunks = chunkText(doc, 2);
+      const vocab = buildVocabulary(chunks, question);
+      const questionVector = makeVector(question, vocab);
+
+      const scored = chunks.map((chunk, idx) => {
+        const vector = makeVector(chunk, vocab);
+        const score = cosineSimilarity(vector, questionVector);
+        return {
+          id: idx + 1,
+          text: chunk,
+          vector,
+          score,
+          keywords: topKeywords(chunk)
+        };
+      }).sort((a,b) => b.score - a.score);
+
+      const topK = scored.slice(0, Math.min(3, scored.length));
+      const prompt = [
+        "System: Answer the user using only the retrieved context below.",
+        "",
+        "Retrieved context:",
+        ...topK.map((c, i) => `[Chunk ${i+1}] ${c.text}`),
+        "",
+        `User question: ${question}`,
+        "",
+        "Answer:"
+      ].join("\n");
+
+      const answer = generateAnswer(question, topK);
+
+      return { doc, question, chunks, vocab, questionVector, scored, topK, prompt, answer };
+    }
+
+    function generateAnswer(question, topK){
+      if(!topK.length){
+        return "I could not find relevant context in the retrieved source.";
+      }
+
+      const joined = topK.map(c => c.text).join(" ");
+      const q = question.toLowerCase();
+
+      let answer = "";
+
+      if(q.includes("how long") || q.includes("how many days") || q.includes("refund")){
+        const days = joined.match(/within\s+(\d+)\s+days/i);
+        const submit = joined.match(/submitted through ([^.]+)/i);
+        answer = `Based on the retrieved context, customers can request a refund ${days ? "within " + days[1] + " days of purchase" : "within the period stated in the source"}, and the request should be ${submit ? "submitted through " + submit[1].trim() : "submitted using the method described in the retrieved context"}.`;
+      } else if(q.includes("best time") || q.includes("visit")){
+        const time = joined.match(/best time to visit is ([^.]+)/i);
+        const risk = joined.match(/(pickpocket[^.]+)\./i);
+        answer = `Based on the retrieved context, the best time to visit is ${time ? time[1].trim() : "the period described in the source"}. Tourists should also watch out for ${risk ? risk[1].trim() : "the caution noted in the retrieved context"}.`;
+      } else if(q.includes("priority support") || q.includes("which users")){
+        const users = [];
+        if(/Olivia/i.test(joined)) users.push("Olivia (Pro)");
+        if(/Sara/i.test(joined)) users.push("Sara (Enterprise)");
+        if(/Malik/i.test(joined) && /priority support/i.test(joined.match(/User: Malik[\s\S]*?(?=User:|$)/)?.[0] || "")) users.push("Malik");
+        answer = users.length
+          ? `Based on the retrieved context, the users who have priority support are ${users.join(" and ")}.`
+          : `Based on the retrieved context, the users with priority support are the ones on plans that include that feature.`;
+      } else {
+        answer = `Grounded answer based on retrieved context: ${topK.map(c => c.text).join(" ")}`;
+      }
+
+      return answer;
+    }
+
+    function renderStep1(state){
+      setStepState(1, "active");
+      ingestBox.textContent = state.doc;
+      metricDocs.textContent = "1";
+      setStepState(1, "done");
+    }
+
+    function renderStep2(state){
+      setStepState(2, "active");
+      metricChunks.textContent = String(state.chunks.length);
+      chunkBox.innerHTML = state.chunks.map((chunk, i) => `
+        <div class="chunk">
+          <strong>Chunk ${i+1}</strong>
+          <div style="margin-top:6px;">${escapeHtml(chunk)}</div>
+        </div>
+      `).join("");
+      setStepState(2, "done");
+    }
+
+    function renderStep3(state){
+      setStepState(3, "active");
+      vectorBox.innerHTML = `
+        <div class="chunk">
+          <strong>Question embedding (simulated)</strong>
+          <div class="chunk-meta">
+            <span class="pill">Top vocabulary: ${state.vocab.slice(0,8).join(", ")}</span>
+          </div>
+          <div class="vector-grid">
+            ${state.questionVector.slice(0,15).map(v => `<div class="vcell">${v}</div>`).join("")}
+          </div>
+        </div>
+        ${state.scored.slice(0, Math.min(4, state.scored.length)).map(c => `
+          <div class="chunk" style="margin-top:10px;">
+            <strong>Chunk ${c.id} vector</strong>
+            <div class="chunk-meta">
+              <span class="pill">Keywords: ${c.keywords.join(", ")}</span>
+            </div>
+            <div class="vector-grid">
+              ${c.vector.slice(0,15).map(v => `<div class="vcell">${v}</div>`).join("")}
+            </div>
+          </div>
+        `).join("")}
+      `;
+      setStepState(3, "done");
+    }
+
+    function renderStep4(state){
+      setStepState(4, "active");
+      metricMatches.textContent = String(state.topK.length);
+      retrieveBox.innerHTML = state.scored.map(c => `
+        <div class="chunk">
+          <strong>Chunk ${c.id}</strong>
+          <div style="margin-top:6px;">${escapeHtml(c.text)}</div>
+          <div class="chunk-meta">
+            <span class="pill">Similarity: ${(c.score * 100).toFixed(1)}%</span>
+            <span class="pill">Keywords: ${c.keywords.join(", ")}</span>
+          </div>
+          <div class="sim-bar-wrap"><div class="sim-bar" style="width:${Math.max(3, c.score * 100)}%"></div></div>
+        </div>
+      `).join("");
+      setStepState(4, "done");
+    }
+
+    function renderStep5(state){
+      setStepState(5, "active");
+      metricContext.textContent = String(state.topK.length);
+      promptBox.textContent = state.prompt;
+      setStepState(5, "done");
+    }
+
+    function renderStep6(state){
+      setStepState(6, "active");
+      answerBox.innerHTML = `
+        <div><span class="highlight">User question</span> ${escapeHtml(state.question)}</div>
+        <div style="margin-top:12px;"><span class="highlight">Grounded answer</span></div>
+        <div style="margin-top:8px;">${escapeHtml(state.answer)}</div>
+        <div class="footer-note">
+          Notice: the answer is based on the retrieved chunks, not the full document. That is the heart of RAG.
+        </div>
+      `;
+      setStepState(6, "done");
+    }
+
+    function runAll(){
+      resetPipeline();
+      currentState = simulateRAG();
+      if(!currentState) return;
+      renderStep1(currentState);
+      renderStep2(currentState);
+      renderStep3(currentState);
+      renderStep4(currentState);
+      renderStep5(currentState);
+      renderStep6(currentState);
+    }
+
+    function runStep(){
+      if(!currentState){
+        currentState = simulateRAG();
+        if(!currentState) return;
+      }
+
+      stepModeIndex += 1;
+
+      if(stepModeIndex === 1) renderStep1(currentState);
+      else if(stepModeIndex === 2) renderStep2(currentState);
+      else if(stepModeIndex === 3) renderStep3(currentState);
+      else if(stepModeIndex === 4) renderStep4(currentState);
+      else if(stepModeIndex === 5) renderStep5(currentState);
+      else if(stepModeIndex === 6) renderStep6(currentState);
+      else {
+        stepModeIndex = 0;
+        resetPipeline();
+        currentState = null;
+      }
+    }
+
+    function escapeHtml(str){
+      return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    runBtn.addEventListener("click", runAll);
+    stepBtn.addEventListener("click", runStep);
+    resetBtn.addEventListener("click", resetPipeline);
+    demoBtn.addEventListener("click", loadDemo);
+
+    loadDemo();
+  </script>
+</body>
+</html>
