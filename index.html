@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAG Simulator</title>
+  <title>RAG Simulator v2.1 — Guided</title>
   <style>
     :root{
       --bg:#0b1020;
-      --panel:#121935;
+      --panel:#131a33;
       --panel-2:#182145;
+      --soft:#222d57;
       --border:rgba(255,255,255,.08);
-      --text:#eef2ff;
-      --muted:#aab4d6;
+      --text:#edf2ff;
+      --muted:#aeb8d8;
       --accent:#7c9cff;
-      --accent-2:#5eead4;
+      --accent2:#5eead4;
       --good:#34d399;
       --warn:#fbbf24;
       --bad:#fb7185;
@@ -21,75 +22,75 @@
       --radius:18px;
     }
 
-    * { box-sizing: border-box; }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
     body{
-      margin:0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(124,156,255,.16), transparent 28%),
-        radial-gradient(circle at top right, rgba(94,234,212,.12), transparent 22%),
-        linear-gradient(180deg, #0a0f1f 0%, #0b1020 100%);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124,156,255,.14), transparent 24%),
+        radial-gradient(circle at top right, rgba(94,234,212,.10), transparent 20%),
+        linear-gradient(180deg, #0a0f1e 0%, #0b1020 100%);
       min-height:100vh;
     }
 
     .app{
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 28px 18px 60px;
+      max-width:1520px;
+      margin:0 auto;
+      padding:24px 18px 60px;
     }
 
     .hero{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
-      gap:24px;
-      margin-bottom:24px;
+      gap:18px;
       flex-wrap:wrap;
+      margin-bottom:18px;
     }
 
     .hero h1{
       margin:0 0 8px;
-      font-size: clamp(30px, 4vw, 46px);
-      line-height:1.05;
+      font-size:clamp(28px, 4vw, 46px);
+      line-height:1.03;
       letter-spacing:-0.03em;
     }
 
     .hero p{
       margin:0;
       color:var(--muted);
-      max-width:760px;
-      font-size:16px;
+      max-width:900px;
+      line-height:1.5;
     }
 
-    .badge-row{
+    .mini-badges{
       display:flex;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
-      margin-top:16px;
+      margin-top:12px;
     }
 
     .badge{
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(255,255,255,.05);
       border:1px solid var(--border);
-      color:#dce5ff;
-      font-size:13px;
+      background:rgba(255,255,255,.04);
+      color:#dfe6ff;
+      border-radius:999px;
+      padding:7px 11px;
+      font-size:12px;
     }
 
     .layout{
       display:grid;
-      grid-template-columns: 1.15fr .85fr;
+      grid-template-columns:430px 1fr;
       gap:18px;
     }
 
-    @media (max-width: 1100px){
-      .layout{ grid-template-columns: 1fr; }
+    @media (max-width:1200px){
+      .layout{grid-template-columns:1fr}
     }
 
     .panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
       border:1px solid var(--border);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
@@ -98,82 +99,102 @@
     }
 
     .panel-header{
-      padding:18px 18px 12px;
+      padding:16px 18px 12px;
       border-bottom:1px solid var(--border);
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      flex-wrap:wrap;
     }
 
     .panel-header h2{
       margin:0;
-      font-size:18px;
+      font-size:17px;
       letter-spacing:-0.02em;
     }
 
     .panel-header p{
-      margin:4px 0 0;
+      margin:6px 0 0;
       color:var(--muted);
       font-size:13px;
+      line-height:1.45;
     }
 
-    .panel-body{
-      padding:18px;
-    }
+    .panel-body{padding:16px 18px 18px}
 
-    .grid-2{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
-    }
-
-    @media (max-width: 800px){
-      .grid-2{ grid-template-columns:1fr; }
-    }
+    .stack{display:grid;gap:14px}
 
     label{
       display:block;
       font-size:13px;
-      color:#dfe7ff;
+      font-weight:700;
       margin-bottom:8px;
-      font-weight:600;
+      color:#dfe7ff;
     }
 
-    textarea, input{
+    textarea, input, select{
       width:100%;
-      border-radius:14px;
       border:1px solid rgba(255,255,255,.1);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      padding:14px 14px;
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border-radius:14px;
+      padding:13px 14px;
       font-size:14px;
       outline:none;
       transition:.2s ease;
     }
 
     textarea{
-      min-height:170px;
+      min-height:150px;
       resize:vertical;
-      line-height:1.5;
+      line-height:1.52;
     }
 
-    input{
-      height:48px;
+    textarea:focus, input:focus, select:focus{
+      border-color:rgba(124,156,255,.72);
+      box-shadow:0 0 0 4px rgba(124,156,255,.15);
+      background:rgba(255,255,255,.055);
     }
 
-    textarea:focus, input:focus{
-      border-color: rgba(124,156,255,.7);
-      box-shadow:0 0 0 4px rgba(124,156,255,.14);
-      background: rgba(255,255,255,.055);
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
     }
 
-    .controls{
+    @media (max-width:700px){
+      .row{grid-template-columns:1fr}
+    }
+
+    .range-wrap{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .range-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
+      font-size:13px;
+    }
+
+    .range-top .value{
+      font-weight:800;
+      color:#fff;
+    }
+
+    input[type="range"]{
+      padding:0;
+      height:auto;
+      background:transparent;
+      border:none;
+      box-shadow:none;
+    }
+
+    .btn-row{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin-top:16px;
     }
 
     button{
@@ -182,17 +203,17 @@
       border-radius:14px;
       padding:12px 16px;
       font-size:14px;
-      font-weight:700;
-      transition: transform .15s ease, opacity .2s ease, box-shadow .2s ease;
+      font-weight:800;
+      transition:transform .15s ease, opacity .2s ease, box-shadow .2s ease;
     }
 
-    button:hover{ transform: translateY(-1px); }
-    button:active{ transform: translateY(0); }
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:translateY(0)}
 
     .primary{
-      background: linear-gradient(135deg, var(--accent), #9f7cff);
+      background:linear-gradient(135deg, var(--accent), #9f7cff);
       color:white;
-      box-shadow:0 10px 30px rgba(124,156,255,.25);
+      box-shadow:0 10px 28px rgba(124,156,255,.28);
     }
 
     .secondary{
@@ -202,255 +223,69 @@
     }
 
     .success{
-      background: linear-gradient(135deg, #10b981, #34d399);
-      color:#032217;
+      background:linear-gradient(135deg, #10b981, #34d399);
+      color:#07261b;
     }
 
-    .stepper{
+    .warning{
+      background:linear-gradient(135deg, #f59e0b, #fbbf24);
+      color:#342100;
+    }
+
+    .docs-list{
       display:grid;
-      gap:12px;
+      gap:10px;
     }
 
-    .step{
+    .doc-card{
+      border:1px solid var(--border);
       background:rgba(255,255,255,.03);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:16px;
-      transition:.25s ease;
-      position:relative;
-      overflow:hidden;
+      border-radius:14px;
+      padding:12px;
     }
 
-    .step::before{
-      content:"";
-      position:absolute;
-      left:0;
-      top:0;
-      bottom:0;
-      width:4px;
-      background:transparent;
-      transition:.25s ease;
-    }
-
-    .step.active{
-      background:linear-gradient(180deg, rgba(124,156,255,.10), rgba(124,156,255,.03));
-      border-color:rgba(124,156,255,.28);
-    }
-
-    .step.active::before{
-      background:linear-gradient(180deg, var(--accent), var(--accent-2));
-    }
-
-    .step.done{
-      border-color:rgba(52,211,153,.28);
-    }
-
-    .step.done::before{
-      background:linear-gradient(180deg, var(--good), var(--accent-2));
-    }
-
-    .step-top{
+    .doc-card-top{
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      gap:12px;
-      margin-bottom:8px;
-    }
-
-    .step-num{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width:30px;
-      height:30px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-      font-size:13px;
-      font-weight:700;
-      flex:0 0 auto;
-    }
-
-    .step-title{
-      display:flex;
       align-items:center;
       gap:10px;
-      font-weight:700;
-      font-size:15px;
-      letter-spacing:-0.01em;
+      margin-bottom:6px;
     }
 
-    .status{
-      font-size:12px;
-      color:var(--muted);
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--border);
-      padding:5px 8px;
-      border-radius:999px;
-      white-space:nowrap;
-    }
-
-    .step p{
-      margin:0 0 10px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
-    }
-
-    .content-box{
-      background:rgba(8,12,26,.6);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:14px;
-      padding:12px;
-      font-size:13px;
-      color:#dbe4ff;
-      line-height:1.5;
-      max-height:220px;
-      overflow:auto;
-      white-space:pre-wrap;
-    }
-
-    .tiny{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .chunk-list{
-      display:grid;
-      gap:10px;
-    }
-
-    .chunk{
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      background:rgba(255,255,255,.025);
-    }
-
-    .chunk strong{
-      color:#fff;
-    }
-
-    .chunk-meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:5px 8px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.04);
-    }
-
-    .sim-bar-wrap{
-      height:10px;
-      width:100%;
-      background:rgba(255,255,255,.06);
-      border-radius:999px;
-      overflow:hidden;
-      margin-top:8px;
-    }
-
-    .sim-bar{
-      height:100%;
-      border-radius:999px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      width:0%;
-      transition:width .35s ease;
-    }
-
-    .vector-grid{
-      display:grid;
-      grid-template-columns:repeat(5, 1fr);
-      gap:6px;
-      margin-top:8px;
-    }
-
-    .vcell{
-      height:24px;
-      border-radius:8px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.04);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:11px;
-      color:#d5e0ff;
-    }
-
-    .answer{
+    .doc-card-title{
+      font-weight:800;
       font-size:14px;
-      line-height:1.65;
-      color:#eef4ff;
     }
 
-    .highlight{
-      color:#fff;
-      background:rgba(124,156,255,.18);
-      border:1px solid rgba(124,156,255,.35);
-      padding:2px 6px;
-      border-radius:8px;
-    }
-
-    .footer-note{
-      margin-top:14px;
-      font-size:12px;
+    .doc-meta{
       color:var(--muted);
+      font-size:12px;
     }
 
-    .legend{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:8px;
+    .doc-card button{
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:12px;
+      font-weight:700;
     }
 
-    .legend .pill span.dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      display:inline-block;
-    }
-
-    .doc-tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-bottom:12px;
-    }
-
-    .doc-tab{
-      padding:9px 12px;
-      border-radius:12px;
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--border);
-      color:#dfe8ff;
-      font-size:13px;
-      cursor:pointer;
-      user-select:none;
-    }
-
-    .doc-tab.active{
-      background:rgba(124,156,255,.18);
-      border-color:rgba(124,156,255,.35);
-    }
-
-    .summary-strip{
+    .workspace{
       display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:12px;
-      margin-top:16px;
+      gap:18px;
     }
 
-    @media (max-width: 900px){
-      .summary-strip{ grid-template-columns:repeat(2, 1fr); }
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(6, 1fr);
+      gap:12px;
+    }
+
+    @media (max-width:1100px){
+      .metrics{grid-template-columns:repeat(3, 1fr)}
+    }
+
+    @media (max-width:700px){
+      .metrics{grid-template-columns:repeat(2, 1fr)}
     }
 
     .metric{
@@ -461,20 +296,400 @@
     }
 
     .metric .label{
-      font-size:12px;
       color:var(--muted);
+      font-size:12px;
       margin-bottom:6px;
     }
 
     .metric .value{
-      font-size:22px;
-      font-weight:800;
+      font-size:24px;
+      font-weight:900;
       letter-spacing:-0.03em;
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns:1fr 380px;
+      gap:18px;
+    }
+
+    @media (max-width:1280px){
+      .split{grid-template-columns:1fr}
+    }
+
+    .section-title{
+      margin:0 0 10px;
+      font-size:15px;
+      letter-spacing:-0.02em;
     }
 
     .subtle{
       color:var(--muted);
       font-size:12px;
+      line-height:1.45;
+    }
+
+    .flow{
+      display:grid;
+      grid-template-columns:repeat(6, 1fr);
+      gap:10px;
+      align-items:stretch;
+    }
+
+    @media (max-width:1100px){
+      .flow{grid-template-columns:repeat(3, 1fr)}
+    }
+
+    @media (max-width:650px){
+      .flow{grid-template-columns:1fr}
+    }
+
+    .flow-step{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+      position:relative;
+      min-height:122px;
+      transition:.25s ease;
+    }
+
+    .flow-step.active{
+      background:linear-gradient(180deg, rgba(124,156,255,.13), rgba(124,156,255,.03));
+      border-color:rgba(124,156,255,.35);
+      box-shadow:0 0 0 1px rgba(124,156,255,.15) inset;
+    }
+
+    .flow-step.done{
+      border-color:rgba(52,211,153,.35);
+    }
+
+    .flow-num{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:900;
+      background:rgba(255,255,255,.08);
+      margin-bottom:10px;
+    }
+
+    .flow-step h3{
+      margin:0 0 6px;
+      font-size:14px;
+    }
+
+    .flow-step p{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    .cards{
+      display:grid;
+      gap:12px;
+    }
+
+    .card{
+      border:1px solid var(--border);
+      background:rgba(8,12,26,.45);
+      border-radius:16px;
+      overflow:hidden;
+    }
+
+    .card-header{
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .card-header strong{font-size:14px}
+    .card-body{padding:14px}
+
+    .codeish{
+      white-space:pre-wrap;
+      line-height:1.55;
+      font-size:13px;
+      color:#e3eaff;
+      max-height:360px;
+      overflow:auto;
+    }
+
+    .chunk{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.025);
+      border-radius:14px;
+      padding:12px;
+      margin-bottom:10px;
+    }
+
+    .chunk:last-child{margin-bottom:0}
+
+    .chunk-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      padding:5px 8px;
+      font-size:12px;
+      color:#dce4ff;
+    }
+
+    .bar-wrap{
+      height:10px;
+      border-radius:999px;
+      overflow:hidden;
+      background:rgba(255,255,255,.06);
+      margin-top:8px;
+    }
+
+    .bar{
+      height:100%;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      width:0%;
+      transition:width .35s ease;
+    }
+
+    .vector-grid{
+      display:grid;
+      grid-template-columns:repeat(8, 1fr);
+      gap:6px;
+      margin-top:8px;
+    }
+
+    @media (max-width:700px){
+      .vector-grid{grid-template-columns:repeat(4, 1fr)}
+    }
+
+    .v{
+      height:26px;
+      border-radius:8px;
+      font-size:11px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(255,255,255,.05);
+      background:rgba(255,255,255,.045);
+      color:#dbe4ff;
+    }
+
+    .compare{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    @media (max-width:900px){
+      .compare{grid-template-columns:1fr}
+    }
+
+    .answer-box{
+      min-height:190px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .highlight{
+      display:inline-block;
+      padding:2px 7px;
+      border-radius:8px;
+      background:rgba(124,156,255,.18);
+      border:1px solid rgba(124,156,255,.35);
+      font-size:12px;
+      color:#fff;
+      margin-bottom:8px;
+    }
+
+    .legend{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .legend .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      display:inline-block;
+    }
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:13px;
+      font-style:italic;
+    }
+
+    .footer-note{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .guide{
+      position:sticky;
+      top:18px;
+      align-self:start;
+      display:grid;
+      gap:12px;
+    }
+
+    .guide-card{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(124,156,255,.10), rgba(255,255,255,.02));
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .guide-title{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
+    .guide-title strong{
+      font-size:15px;
+    }
+
+    .guide-step{
+      font-size:12px;
+      color:#fff;
+      padding:5px 8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--border);
+      white-space:nowrap;
+    }
+
+    .guide-card p{
+      margin:0 0 12px;
+      color:#dbe3ff;
+      line-height:1.5;
+      font-size:13px;
+    }
+
+    .guide-box{
+      border:1px solid var(--border);
+      background:rgba(8,12,26,.45);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .guide-box h4{
+      margin:0 0 8px;
+      font-size:13px;
+    }
+
+    .guide-box ul{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:13px;
+    }
+
+    .guide-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .checklist{
+      display:grid;
+      gap:8px;
+    }
+
+    .check{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:12px;
+      padding:10px;
+      font-size:13px;
+    }
+
+    .check .dot{
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--border);
+      flex:0 0 auto;
+      margin-top:1px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      color:#fff;
+    }
+
+    .check.done .dot{
+      background:rgba(52,211,153,.18);
+      border-color:rgba(52,211,153,.38);
+      color:#9ff4ce;
+    }
+
+    .takeaway{
+      border:1px solid rgba(94,234,212,.18);
+      background:rgba(94,234,212,.06);
+      border-radius:14px;
+      padding:12px;
+      font-size:13px;
+      color:#dffcf7;
+      line-height:1.5;
+    }
+
+    .teach-card{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .teach-card h3{
+      margin:0 0 8px;
+      font-size:15px;
+    }
+
+    .teach-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.5;
+      font-size:13px;
     }
   </style>
 </head>
@@ -482,30 +697,16 @@
   <div class="app">
     <div class="hero">
       <div>
-        <h1>RAG Simulator</h1>
+        <h1>RAG Simulator v2.1</h1>
         <p>
-          Learn Retrieval-Augmented Generation step by step. This simulator shows how documents are ingested,
-          chunked, “embedded” (simulated), searched at query time, and injected into the prompt so the LLM can answer.
+          This version has a built-in practical guide. It teaches you what to click, what to look at, and what each step means while you use it.
         </p>
-        <div class="badge-row">
-          <div class="badge">Single HTML file</div>
-          <div class="badge">Modern UI</div>
-          <div class="badge">RAG pipeline visualized</div>
-          <div class="badge">No backend needed</div>
-        </div>
-      </div>
-
-      <div class="panel" style="min-width:280px; max-width:360px; width:100%;">
-        <div class="panel-body">
-          <div class="tiny" style="margin-bottom:8px;">What this teaches</div>
-          <div class="legend">
-            <div class="pill"><span class="dot" style="background:var(--accent)"></span> Retrieval at query time</div>
-            <div class="pill"><span class="dot" style="background:var(--accent-2)"></span> Prompt augmentation</div>
-            <div class="pill"><span class="dot" style="background:var(--good)"></span> Grounded answer</div>
-          </div>
-          <div class="footer-note">
-            This uses a simplified similarity method so you can understand the concept clearly. It simulates embeddings rather than using a real vector database.
-          </div>
+        <div class="mini-badges">
+          <div class="badge">Guided mode built in</div>
+          <div class="badge">Practice mode</div>
+          <div class="badge">Step-by-step teaching</div>
+          <div class="badge">Without RAG vs With RAG</div>
+          <div class="badge">Chunk size + Top-K</div>
         </div>
       </div>
     </div>
@@ -513,129 +714,337 @@
     <div class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div>
-            <h2>1) Source documents + question</h2>
-            <p>These represent your external knowledge source: PDFs, docs, database content, or API responses.</p>
-          </div>
+          <h2>Controls</h2>
+          <p>Load demo content, ask a question, and move through the RAG pipeline.</p>
         </div>
-        <div class="panel-body">
-          <div class="doc-tabs" id="docTabs"></div>
+        <div class="panel-body stack">
+          <div>
+            <label for="questionInput">User question</label>
+            <input id="questionInput" type="text" placeholder="Ask a question..." />
+          </div>
 
-          <div class="grid-2">
-            <div>
-              <label for="docInput">External knowledge source</label>
-              <textarea id="docInput"></textarea>
+          <div class="row">
+            <div class="range-wrap">
+              <div class="range-top">
+                <span>Chunk size</span>
+                <span class="value" id="chunkSizeValue">2 sentences</span>
+              </div>
+              <input id="chunkSize" type="range" min="1" max="4" step="1" value="2" />
+              <div class="small">How many sentences go into each chunk.</div>
             </div>
-            <div>
-              <label for="questionInput">User question</label>
-              <input id="questionInput" type="text" placeholder="Ask a question about the source data..." />
-              <div class="summary-strip">
-                <div class="metric">
-                  <div class="label">Docs loaded</div>
-                  <div class="value" id="metricDocs">3</div>
-                </div>
-                <div class="metric">
-                  <div class="label">Chunks</div>
-                  <div class="value" id="metricChunks">0</div>
-                </div>
-                <div class="metric">
-                  <div class="label">Top matches</div>
-                  <div class="value" id="metricMatches">0</div>
-                </div>
-                <div class="metric">
-                  <div class="label">Prompt context</div>
-                  <div class="value" id="metricContext">0</div>
-                </div>
-              </div>
 
-              <div class="controls">
-                <button class="primary" id="runBtn">Run RAG simulation</button>
-                <button class="secondary" id="stepBtn">Step through</button>
-                <button class="secondary" id="resetBtn">Reset</button>
-                <button class="success" id="demoBtn">Load demo</button>
+            <div class="range-wrap">
+              <div class="range-top">
+                <span>Top-K retrieval</span>
+                <span class="value" id="topKValue">3 chunks</span>
               </div>
-
-              <div class="footer-note">
-                Tip: edit the document and question, then run again. You will see how retrieval changes based on the query.
-              </div>
+              <input id="topK" type="range" min="1" max="5" step="1" value="3" />
+              <div class="small">How many chunks get inserted into the prompt.</div>
             </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="success" id="demoBtn">Load demo data</button>
+            <button class="primary" id="runBtn">Run full simulation</button>
+            <button class="warning" id="stepBtn">Step through</button>
+            <button class="secondary" id="resetBtn">Reset</button>
+          </div>
+
+          <div>
+            <div class="section-title">Documents</div>
+            <div id="docsList" class="docs-list"></div>
+          </div>
+
+          <div>
+            <label for="docTitleInput">New or selected document title</label>
+            <input id="docTitleInput" type="text" placeholder="Document title" />
+          </div>
+
+          <div>
+            <label for="docTextInput">Document text</label>
+            <textarea id="docTextInput" placeholder="Paste document content here..."></textarea>
+          </div>
+
+          <div class="btn-row">
+            <button class="primary" id="saveDocBtn">Save document</button>
+            <button class="secondary" id="newDocBtn">New document</button>
+            <button class="secondary" id="deleteDocBtn">Delete selected</button>
+          </div>
+
+          <div class="teach-card">
+            <h3>Fastest way to understand RAG</h3>
+            <p>
+              First load demo data. Then run the simulation. Then compare the answer without RAG versus the answer with RAG. After that, look at retrieval results and augmented prompt.
+            </p>
           </div>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>2) RAG pipeline</h2>
-            <p>Watch each stage in order.</p>
+      <div class="workspace">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Pipeline overview</h2>
+            <p>Each step lights up as the simulation runs.</p>
+          </div>
+          <div class="panel-body">
+            <div class="flow">
+              <div class="flow-step" id="flow1">
+                <div class="flow-num">1</div>
+                <h3>Source docs</h3>
+                <p>External knowledge enters the system.</p>
+              </div>
+              <div class="flow-step" id="flow2">
+                <div class="flow-num">2</div>
+                <h3>Chunking</h3>
+                <p>Docs split into smaller pieces.</p>
+              </div>
+              <div class="flow-step" id="flow3">
+                <div class="flow-num">3</div>
+                <h3>Embeddings</h3>
+                <p>Chunks become searchable vectors.</p>
+              </div>
+              <div class="flow-step" id="flow4">
+                <div class="flow-num">4</div>
+                <h3>Retrieve</h3>
+                <p>Best chunks are selected at query time.</p>
+              </div>
+              <div class="flow-step" id="flow5">
+                <div class="flow-num">5</div>
+                <h3>Augment prompt</h3>
+                <p>Retrieved context is inserted into the prompt.</p>
+              </div>
+              <div class="flow-step" id="flow6">
+                <div class="flow-num">6</div>
+                <h3>Generate</h3>
+                <p>The LLM answers using that context.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="panel-body">
-          <div class="stepper">
-            <div class="step" id="step1">
-              <div class="step-top">
-                <div class="step-title"><span class="step-num">1</span>Ingestion</div>
-                <div class="status" id="status1">waiting</div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="label">Documents</div>
+            <div class="value" id="mDocs">0</div>
+          </div>
+          <div class="metric">
+            <div class="label">Total chunks</div>
+            <div class="value" id="mChunks">0</div>
+          </div>
+          <div class="metric">
+            <div class="label">Retrieved</div>
+            <div class="value" id="mRetrieved">0</div>
+          </div>
+          <div class="metric">
+            <div class="label">Chunk size</div>
+            <div class="value" id="mChunkSize">2</div>
+          </div>
+          <div class="metric">
+            <div class="label">Top-K</div>
+            <div class="value" id="mTopK">3</div>
+          </div>
+          <div class="metric">
+            <div class="label">Prompt context</div>
+            <div class="value" id="mContext">0</div>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Simulator output</h2>
+              <p>Use this to inspect what the system is doing internally.</p>
+            </div>
+            <div class="panel-body cards">
+              <div class="card">
+                <div class="card-header">
+                  <strong>1. Source documents</strong>
+                  <span class="small">What came into the system</span>
+                </div>
+                <div class="card-body codeish" id="sourceBox"><span class="empty">Run the simulator to see source documents.</span></div>
               </div>
-              <p>The system receives external data. In real life this may come from PDFs, docs, databases, websites, or APIs.</p>
-              <div class="content-box" id="ingestBox">No source loaded yet.</div>
+
+              <div class="card">
+                <div class="card-header">
+                  <strong>2. Chunks</strong>
+                  <span class="small">Smaller retrievable pieces</span>
+                </div>
+                <div class="card-body codeish" id="chunkBox"><span class="empty">Chunks will appear here.</span></div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <strong>3. Embeddings (simulated)</strong>
+                  <span class="small">Searchable numeric representations</span>
+                </div>
+                <div class="card-body" id="vectorBox"><span class="empty">Vectors will appear here.</span></div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <strong>4. Retrieval results</strong>
+                  <span class="small">Which chunks matched the question best</span>
+                </div>
+                <div class="card-body" id="retrieveBox"><span class="empty">Retrieved chunks will appear here.</span></div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <strong>5. Augmented prompt</strong>
+                  <span class="small">Prompt sent to the LLM</span>
+                </div>
+                <div class="card-body codeish" id="promptBox"><span class="empty">Augmented prompt will appear here.</span></div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <strong>6. Answer comparison</strong>
+                  <span class="small">See the value of RAG clearly</span>
+                </div>
+                <div class="card-body">
+                  <div class="legend" style="margin-bottom:12px;">
+                    <div class="pill"><span class="dot" style="background:var(--bad)"></span> Without RAG = generic</div>
+                    <div class="pill"><span class="dot" style="background:var(--good)"></span> With RAG = grounded</div>
+                  </div>
+
+                  <div class="compare">
+                    <div>
+                      <div class="section-title">Without RAG</div>
+                      <div class="answer-box" id="noRagBox"><span class="empty">Run the simulator to compare answers.</span></div>
+                    </div>
+                    <div>
+                      <div class="section-title">With RAG</div>
+                      <div class="answer-box" id="withRagBox"><span class="empty">Run the simulator to compare answers.</span></div>
+                    </div>
+                  </div>
+
+                  <div style="margin-top:18px;">
+                    <div class="section-title">Why the RAG answer is better</div>
+                    <div class="answer-box" id="explainBox"><span class="empty">The explanation will appear here.</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide">
+            <div class="guide-card">
+              <div class="guide-title">
+                <strong>Built-in guide</strong>
+                <span class="guide-step" id="guideStepBadge">Step 1 of 5</span>
+              </div>
+              <p id="guideText">
+                Click <strong>Load demo data</strong> first. That gives you example source documents and a question so you can focus on understanding the RAG process.
+              </p>
+
+              <div class="guide-box">
+                <h4>What to do now</h4>
+                <ul id="guideTodo">
+                  <li>Click Load demo data.</li>
+                  <li>Read the question field.</li>
+                  <li>Notice there are multiple documents loaded.</li>
+                </ul>
+              </div>
+
+              <div class="guide-actions">
+                <button class="primary" id="nextGuideBtn">Next guide step</button>
+                <button class="secondary" id="restartGuideBtn">Restart guide</button>
+              </div>
             </div>
 
-            <div class="step" id="step2">
-              <div class="step-top">
-                <div class="step-title"><span class="step-num">2</span>Chunking</div>
-                <div class="status" id="status2">waiting</div>
+            <div class="guide-card">
+              <div class="guide-title">
+                <strong>Checklist</strong>
+                <span class="guide-step">Progress</span>
               </div>
-              <p>The source is split into smaller chunks so retrieval can find the most relevant parts instead of sending the entire document.</p>
-              <div class="content-box" id="chunkBox">Chunks will appear here.</div>
+              <div class="checklist" id="checklist"></div>
             </div>
 
-            <div class="step" id="step3">
-              <div class="step-top">
-                <div class="step-title"><span class="step-num">3</span>Embeddings / vector store (simulated)</div>
-                <div class="status" id="status3">waiting</div>
+            <div class="guide-card">
+              <div class="guide-title">
+                <strong>What am I looking at?</strong>
+                <span class="guide-step">Current teaching</span>
               </div>
-              <p>Real RAG systems convert chunks into embeddings and store them in a vector database. Here we simulate that so you can understand the idea.</p>
-              <div class="content-box" id="vectorBox">Vector representations will appear here.</div>
+              <p id="whatYouSee">
+                This simulator shows both the inside of the RAG pipeline and the final answer comparison.
+              </p>
+              <div class="takeaway" id="takeawayBox">
+                Key takeaway: RAG works by retrieving relevant external context first, then giving that context to the LLM before it answers.
+              </div>
             </div>
 
-            <div class="step" id="step4">
-              <div class="step-top">
-                <div class="step-title"><span class="step-num">4</span>Retrieve relevant chunks</div>
-                <div class="status" id="status4">waiting</div>
+            <div class="guide-card">
+              <div class="guide-title">
+                <strong>Practice mode</strong>
+                <span class="guide-step">Try it yourself</span>
               </div>
-              <p>At query time, the system compares the user question to the stored chunks and selects the most relevant matches.</p>
-              <div class="content-box" id="retrieveBox">Similarity results will appear here.</div>
-            </div>
-
-            <div class="step" id="step5">
-              <div class="step-top">
-                <div class="step-title"><span class="step-num">5</span>Augmented prompt</div>
-                <div class="status" id="status5">waiting</div>
-              </div>
-              <p>The retrieved chunks are inserted into the prompt as context for the LLM.</p>
-              <div class="content-box" id="promptBox">Prompt will appear here.</div>
-            </div>
-
-            <div class="step" id="step6">
-              <div class="step-top">
-                <div class="step-title"><span class="step-num">6</span>Generated answer</div>
-                <div class="status" id="status6">waiting</div>
-              </div>
-              <p>The LLM answers using the retrieved context instead of relying only on its internal training.</p>
-              <div class="content-box answer" id="answerBox">Answer will appear here.</div>
+              <p>
+                After the demo makes sense, replace the docs with your own text. Then ask a question. Watch which chunks are retrieved and how that changes the answer.
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    const demoDocs = [
-      {
-        name: "Product policy PDF",
-        text: `Refund Policy
+    <script>
+      const questionInput = document.getElementById("questionInput");
+      const chunkSizeInput = document.getElementById("chunkSize");
+      const topKInput = document.getElementById("topK");
+      const chunkSizeValue = document.getElementById("chunkSizeValue");
+      const topKValue = document.getElementById("topKValue");
+
+      const demoBtn = document.getElementById("demoBtn");
+      const runBtn = document.getElementById("runBtn");
+      const stepBtn = document.getElementById("stepBtn");
+      const resetBtn = document.getElementById("resetBtn");
+
+      const docsList = document.getElementById("docsList");
+      const docTitleInput = document.getElementById("docTitleInput");
+      const docTextInput = document.getElementById("docTextInput");
+      const saveDocBtn = document.getElementById("saveDocBtn");
+      const newDocBtn = document.getElementById("newDocBtn");
+      const deleteDocBtn = document.getElementById("deleteDocBtn");
+
+      const sourceBox = document.getElementById("sourceBox");
+      const chunkBox = document.getElementById("chunkBox");
+      const vectorBox = document.getElementById("vectorBox");
+      const retrieveBox = document.getElementById("retrieveBox");
+      const promptBox = document.getElementById("promptBox");
+
+      const noRagBox = document.getElementById("noRagBox");
+      const withRagBox = document.getElementById("withRagBox");
+      const explainBox = document.getElementById("explainBox");
+
+      const mDocs = document.getElementById("mDocs");
+      const mChunks = document.getElementById("mChunks");
+      const mRetrieved = document.getElementById("mRetrieved");
+      const mChunkSize = document.getElementById("mChunkSize");
+      const mTopK = document.getElementById("mTopK");
+      const mContext = document.getElementById("mContext");
+
+      const guideStepBadge = document.getElementById("guideStepBadge");
+      const guideText = document.getElementById("guideText");
+      const guideTodo = document.getElementById("guideTodo");
+      const nextGuideBtn = document.getElementById("nextGuideBtn");
+      const restartGuideBtn = document.getElementById("restartGuideBtn");
+      const checklist = document.getElementById("checklist");
+      const whatYouSee = document.getElementById("whatYouSee");
+      const takeawayBox = document.getElementById("takeawayBox");
+
+      let docs = [];
+      let selectedDocId = null;
+      let currentState = null;
+      let simStepIndex = 0;
+      let guideIndex = 0;
+
+      const demoData = {
+        question: "Which plans have priority support, what are the refund rules, and what are support business hours?",
+        docs: [
+          {
+            id: crypto.randomUUID(),
+            title: "Policy PDF",
+            text: `Refund Policy
 
 Customers may request a refund within 30 days of purchase.
 Refund requests must be submitted through the customer support portal.
@@ -643,21 +1052,11 @@ Digital products are non-refundable after download unless the file is defective.
 Enterprise contracts follow separate terms negotiated in the MSA.
 Priority support is available only to Pro and Enterprise customers.
 Business hours for support are Monday through Friday, 9 AM to 6 PM Eastern Time.`
-      },
-      {
-        name: "Travel knowledge doc",
-        text: `Travel Guide
-
-Rome is known for the Colosseum, Roman Forum, and Vatican City.
-The best time to visit is spring or early fall for milder weather.
-Public transit includes buses, trams, and the Metro.
-Tourists should validate transit tickets before boarding.
-Many museums are closed or have limited hours on certain holidays.
-Local pickpocket risk is higher in crowded tourist areas.`
-      },
-      {
-        name: "API response / database row dump",
-        text: `Customer Plan Data
+          },
+          {
+            id: crypto.randomUUID(),
+            title: "Customer Plan Database Export",
+            text: `Customer Plan Data
 
 User: Olivia
 Plan: Pro
@@ -673,367 +1072,566 @@ User: Sara
 Plan: Enterprise
 Renewal Date: 2026-09-30
 Features: SSO, audit logs, dedicated CSM, priority support`
+          },
+          {
+            id: crypto.randomUUID(),
+            title: "General Help Center Doc",
+            text: `Support Overview
+
+The support team helps customers resolve billing, technical, and access issues.
+Users on paid tiers generally receive faster service than free users.
+The help center contains product setup instructions, account recovery guidance, and billing FAQs.
+Support requests outside business hours are answered the next business day.
+Escalations may be routed to specialist teams depending on plan type and issue severity.`
+          }
+        ]
+      };
+
+      const guideSteps = [
+        {
+          title: "Step 1 of 5",
+          text: "Click Load demo data first. That gives you source documents and a question so you can focus on the RAG process itself.",
+          todo: [
+            "Click Load demo data.",
+            "Read the question field.",
+            "Notice there are multiple documents loaded."
+          ],
+          see: "You are looking at the input side of RAG: the user question plus external data sources.",
+          takeaway: "Key takeaway: RAG starts with external knowledge such as PDFs, docs, databases, or APIs."
+        },
+        {
+          title: "Step 2 of 5",
+          text: "Now run the full simulation. This will populate every stage so you can see the whole RAG pipeline at once.",
+          todo: [
+            "Click Run full simulation.",
+            "Watch the pipeline steps light up.",
+            "Look at the answer comparison near the bottom."
+          ],
+          see: "You are seeing the whole lifecycle: source docs, chunking, embeddings, retrieval, prompt augmentation, and answer generation.",
+          takeaway: "Key takeaway: RAG is not just attaching data. It retrieves the most relevant pieces at query time."
+        },
+        {
+          title: "Step 3 of 5",
+          text: "Look closely at Retrieval results and Augmented prompt. These are the two most important internal views for understanding how RAG works.",
+          todo: [
+            "Find the Retrieval results section.",
+            "See which chunks scored highest.",
+            "Then look at the Augmented prompt section."
+          ],
+          see: "Retrieval results show which chunks matched the question. The augmented prompt shows those chunks being inserted as context for the LLM.",
+          takeaway: "Key takeaway: the LLM does not search the full documents directly. It gets only the retrieved chunks."
+        },
+        {
+          title: "Step 4 of 5",
+          text: "Compare Without RAG and With RAG. This is the simplest practical proof of why RAG matters.",
+          todo: [
+            "Read the Without RAG answer.",
+            "Read the With RAG answer.",
+            "Read the explanation below them."
+          ],
+          see: "Without RAG, the answer is more generic. With RAG, the answer is grounded in the retrieved evidence.",
+          takeaway: "Key takeaway: RAG helps the model answer using your external knowledge, not just general memory."
+        },
+        {
+          title: "Step 5 of 5",
+          text: "Now experiment. Change chunk size or top-K and run again. Then replace the demo docs with your own text and see how retrieval changes.",
+          todo: [
+            "Move the Chunk size slider.",
+            "Move the Top-K slider.",
+            "Run again and observe what changes."
+          ],
+          see: "Chunk size affects how documents are split. Top-K affects how many chunks are sent into the prompt.",
+          takeaway: "Key takeaway: RAG quality depends heavily on chunking and retrieval strategy, not just the LLM."
+        }
+      ];
+
+      function updateRangeLabels() {
+        chunkSizeValue.textContent = `${chunkSizeInput.value} sentence${chunkSizeInput.value === "1" ? "" : "s"}`;
+        topKValue.textContent = `${topKInput.value} chunk${topKInput.value === "1" ? "" : "s"}`;
+        mChunkSize.textContent = chunkSizeInput.value;
+        mTopK.textContent = topKInput.value;
       }
-    ];
 
-    const docTabs = document.getElementById("docTabs");
-    const docInput = document.getElementById("docInput");
-    const questionInput = document.getElementById("questionInput");
+      chunkSizeInput.addEventListener("input", updateRangeLabels);
+      topKInput.addEventListener("input", updateRangeLabels);
 
-    const runBtn = document.getElementById("runBtn");
-    const stepBtn = document.getElementById("stepBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const demoBtn = document.getElementById("demoBtn");
+      function renderGuide() {
+        const step = guideSteps[guideIndex];
+        guideStepBadge.textContent = step.title;
+        guideText.innerHTML = step.text;
+        guideTodo.innerHTML = step.todo.map(item => `<li>${item}</li>`).join("");
+        whatYouSee.textContent = step.see;
+        takeawayBox.textContent = step.takeaway;
+        renderChecklist();
+      }
 
-    const ingestBox = document.getElementById("ingestBox");
-    const chunkBox = document.getElementById("chunkBox");
-    const vectorBox = document.getElementById("vectorBox");
-    const retrieveBox = document.getElementById("retrieveBox");
-    const promptBox = document.getElementById("promptBox");
-    const answerBox = document.getElementById("answerBox");
+      function renderChecklist() {
+        checklist.innerHTML = guideSteps.map((step, index) => {
+          const done = index < guideIndex;
+          const current = index === guideIndex;
+          return `
+            <div class="check ${done ? "done" : ""}">
+              <div class="dot">${done ? "✓" : current ? "•" : index + 1}</div>
+              <div>${step.title.replace(" of 5","")}</div>
+            </div>
+          `;
+        }).join("");
+      }
 
-    const metricDocs = document.getElementById("metricDocs");
-    const metricChunks = document.getElementById("metricChunks");
-    const metricMatches = document.getElementById("metricMatches");
-    const metricContext = document.getElementById("metricContext");
+      nextGuideBtn.addEventListener("click", () => {
+        guideIndex = (guideIndex + 1) % guideSteps.length;
+        renderGuide();
+      });
 
-    let activeDocIndex = 0;
-    let currentState = null;
-    let stepModeIndex = 0;
+      restartGuideBtn.addEventListener("click", () => {
+        guideIndex = 0;
+        renderGuide();
+      });
 
-    function renderTabs() {
-      docTabs.innerHTML = "";
-      demoDocs.forEach((doc, index) => {
-        const el = document.createElement("div");
-        el.className = "doc-tab" + (index === activeDocIndex ? " active" : "");
-        el.textContent = doc.name;
-        el.addEventListener("click", () => {
-          activeDocIndex = index;
-          docInput.value = demoDocs[index].text;
-          questionInput.value = defaultQuestionForDoc(index);
-          renderTabs();
-          resetPipeline();
+      function renderDocs() {
+        docsList.innerHTML = "";
+        mDocs.textContent = String(docs.length);
+
+        if (!docs.length) {
+          docsList.innerHTML = `<div class="empty">No documents yet. Load demo or create one.</div>`;
+          return;
+        }
+
+        docs.forEach(doc => {
+          const card = document.createElement("div");
+          card.className = "doc-card";
+          card.innerHTML = `
+            <div class="doc-card-top">
+              <div>
+                <div class="doc-card-title">${escapeHtml(doc.title)}</div>
+                <div class="doc-meta">${doc.text.length} characters</div>
+              </div>
+              <button class="secondary" data-id="${doc.id}">Select</button>
+            </div>
+            <div class="small">${escapeHtml(doc.text.slice(0, 120))}${doc.text.length > 120 ? "..." : ""}</div>
+          `;
+          card.querySelector("button").addEventListener("click", () => {
+            selectedDocId = doc.id;
+            loadSelectedDoc();
+          });
+          docsList.appendChild(card);
         });
-        docTabs.appendChild(el);
+      }
+
+      function loadSelectedDoc() {
+        const doc = docs.find(d => d.id === selectedDocId);
+        if (!doc) return;
+        docTitleInput.value = doc.title;
+        docTextInput.value = doc.text;
+      }
+
+      function clearDocEditor() {
+        selectedDocId = null;
+        docTitleInput.value = "";
+        docTextInput.value = "";
+      }
+
+      function saveDoc() {
+        const title = docTitleInput.value.trim();
+        const text = docTextInput.value.trim();
+
+        if (!title || !text) {
+          alert("Please enter both a document title and document text.");
+          return;
+        }
+
+        if (selectedDocId) {
+          const doc = docs.find(d => d.id === selectedDocId);
+          if (doc) {
+            doc.title = title;
+            doc.text = text;
+          }
+        } else {
+          const newDoc = {
+            id: crypto.randomUUID(),
+            title,
+            text
+          };
+          docs.push(newDoc);
+          selectedDocId = newDoc.id;
+        }
+
+        renderDocs();
+      }
+
+      function deleteSelectedDoc() {
+        if (!selectedDocId) {
+          alert("Select a document first.");
+          return;
+        }
+        docs = docs.filter(d => d.id !== selectedDocId);
+        clearDocEditor();
+        renderDocs();
+      }
+
+      saveDocBtn.addEventListener("click", saveDoc);
+      newDocBtn.addEventListener("click", clearDocEditor);
+      deleteDocBtn.addEventListener("click", deleteSelectedDoc);
+
+      demoBtn.addEventListener("click", () => {
+        docs = structuredClone(demoData.docs);
+        selectedDocId = docs[0].id;
+        questionInput.value = demoData.question;
+        chunkSizeInput.value = 2;
+        topKInput.value = 3;
+        updateRangeLabels();
+        renderDocs();
+        loadSelectedDoc();
+        resetOutputs();
+        guideIndex = 1;
+        renderGuide();
       });
-    }
 
-    function defaultQuestionForDoc(index){
-      if(index === 0) return "How long do customers have to request a refund and how do they submit it?";
-      if(index === 1) return "What is the best time to visit Rome and what should tourists watch out for?";
-      return "Which users have priority support and what plans are they on?";
-    }
-
-    function loadDemo(){
-      activeDocIndex = 0;
-      renderTabs();
-      docInput.value = demoDocs[0].text;
-      questionInput.value = defaultQuestionForDoc(0);
-      resetPipeline();
-    }
-
-    function resetPipeline(){
-      currentState = null;
-      stepModeIndex = 0;
-
-      ingestBox.textContent = "No source loaded yet.";
-      chunkBox.textContent = "Chunks will appear here.";
-      vectorBox.textContent = "Vector representations will appear here.";
-      retrieveBox.textContent = "Similarity results will appear here.";
-      promptBox.textContent = "Prompt will appear here.";
-      answerBox.textContent = "Answer will appear here.";
-
-      metricChunks.textContent = "0";
-      metricMatches.textContent = "0";
-      metricContext.textContent = "0";
-
-      [1,2,3,4,5,6].forEach(i => {
-        document.getElementById("step" + i).className = "step";
-        document.getElementById("status" + i).textContent = "waiting";
-      });
-    }
-
-    function setStepState(stepNum, state){
-      const step = document.getElementById("step" + stepNum);
-      const status = document.getElementById("status" + stepNum);
-      step.classList.remove("active", "done");
-      if(state === "active"){
-        step.classList.add("active");
-        status.textContent = "running";
-      } else if(state === "done"){
-        step.classList.add("done");
-        status.textContent = "done";
-      } else {
-        status.textContent = "waiting";
-      }
-    }
-
-    function tokenize(text){
-      return (text.toLowerCase().match(/[a-z0-9]+/g) || []).filter(Boolean);
-    }
-
-    function sentenceSplit(text){
-      return text
-        .replace(/\n+/g, " ")
-        .split(/(?<=[.!?])\s+/)
-        .map(s => s.trim())
-        .filter(Boolean);
-    }
-
-    function chunkText(text, maxSentences = 2){
-      const sentences = sentenceSplit(text);
-      const chunks = [];
-      for(let i = 0; i < sentences.length; i += maxSentences){
-        chunks.push(sentences.slice(i, i + maxSentences).join(" "));
-      }
-      return chunks;
-    }
-
-    function unique(arr){
-      return [...new Set(arr)];
-    }
-
-    function buildVocabulary(chunks, question){
-      const words = unique([...chunks.flatMap(tokenize), ...tokenize(question)])
-        .filter(w => w.length > 2)
-        .slice(0, 50);
-      return words;
-    }
-
-    function makeVector(text, vocabulary){
-      const tokens = tokenize(text);
-      return vocabulary.map(word => tokens.filter(t => t === word).length);
-    }
-
-    function cosineSimilarity(vecA, vecB){
-      let dot = 0, magA = 0, magB = 0;
-      for(let i = 0; i < vecA.length; i++){
-        dot += vecA[i] * vecB[i];
-        magA += vecA[i] * vecA[i];
-        magB += vecB[i] * vecB[i];
-      }
-      if(magA === 0 || magB === 0) return 0;
-      return dot / (Math.sqrt(magA) * Math.sqrt(magB));
-    }
-
-    function topKeywords(text, limit = 5){
-      const counts = {};
-      tokenize(text)
-        .filter(w => w.length > 2)
-        .forEach(w => counts[w] = (counts[w] || 0) + 1);
-
-      return Object.entries(counts)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0, limit)
-        .map(([word]) => word);
-    }
-
-    function simulateRAG(){
-      const doc = docInput.value.trim();
-      const question = questionInput.value.trim();
-
-      if(!doc || !question){
-        alert("Please provide both a document and a question.");
-        return null;
+      function resetOutputs() {
+        currentState = null;
+        simStepIndex = 0;
+        sourceBox.innerHTML = `<span class="empty">Run the simulator to see source documents.</span>`;
+        chunkBox.innerHTML = `<span class="empty">Chunks will appear here.</span>`;
+        vectorBox.innerHTML = `<span class="empty">Vectors will appear here.</span>`;
+        retrieveBox.innerHTML = `<span class="empty">Retrieved chunks will appear here.</span>`;
+        promptBox.innerHTML = `<span class="empty">Augmented prompt will appear here.</span>`;
+        noRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
+        withRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
+        explainBox.innerHTML = `<span class="empty">The explanation will appear here.</span>`;
+        mChunks.textContent = "0";
+        mRetrieved.textContent = "0";
+        mContext.textContent = "0";
+        for (let i = 1; i <= 6; i++) {
+          const el = document.getElementById("flow" + i);
+          el.classList.remove("active", "done");
+        }
       }
 
-      const chunks = chunkText(doc, 2);
-      const vocab = buildVocabulary(chunks, question);
-      const questionVector = makeVector(question, vocab);
+      resetBtn.addEventListener("click", resetOutputs);
 
-      const scored = chunks.map((chunk, idx) => {
-        const vector = makeVector(chunk, vocab);
-        const score = cosineSimilarity(vector, questionVector);
+      function setFlow(step, state) {
+        const el = document.getElementById("flow" + step);
+        el.classList.remove("active", "done");
+        if (state === "active") el.classList.add("active");
+        if (state === "done") el.classList.add("done");
+      }
+
+      function tokenize(text) {
+        return (text.toLowerCase().match(/[a-z0-9]+/g) || []).filter(Boolean);
+      }
+
+      function sentenceSplit(text) {
+        return text
+          .replace(/\n+/g, " ")
+          .split(/(?<=[.!?])\s+/)
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+
+      function chunkText(text, size) {
+        const sentences = sentenceSplit(text);
+        const chunks = [];
+        if (!sentences.length) return [text];
+        for (let i = 0; i < sentences.length; i += size) {
+          chunks.push(sentences.slice(i, i + size).join(" "));
+        }
+        return chunks;
+      }
+
+      function unique(arr) {
+        return [...new Set(arr)];
+      }
+
+      function buildVocabulary(allChunks, question) {
+        return unique([...allChunks.flatMap(c => tokenize(c.text)), ...tokenize(question)])
+          .filter(w => w.length > 2)
+          .slice(0, 64);
+      }
+
+      function makeVector(text, vocabulary) {
+        const tokens = tokenize(text);
+        return vocabulary.map(word => tokens.filter(t => t === word).length);
+      }
+
+      function cosineSimilarity(a, b) {
+        let dot = 0, ma = 0, mb = 0;
+        for (let i = 0; i < a.length; i++) {
+          dot += a[i] * b[i];
+          ma += a[i] * a[i];
+          mb += b[i] * b[i];
+        }
+        if (ma === 0 || mb === 0) return 0;
+        return dot / (Math.sqrt(ma) * Math.sqrt(mb));
+      }
+
+      function topKeywords(text, n = 5) {
+        const counts = {};
+        tokenize(text)
+          .filter(w => w.length > 2)
+          .forEach(w => counts[w] = (counts[w] || 0) + 1);
+
+        return Object.entries(counts)
+          .sort((a,b) => b[1] - a[1])
+          .slice(0, n)
+          .map(([w]) => w);
+      }
+
+      function simulateRag() {
+        const question = questionInput.value.trim();
+        if (!docs.length) {
+          alert("Please load demo data or add at least one document.");
+          return null;
+        }
+        if (!question) {
+          alert("Please enter a question.");
+          return null;
+        }
+
+        const chunkSize = Number(chunkSizeInput.value);
+        const topK = Number(topKInput.value);
+
+        const allChunks = [];
+        docs.forEach(doc => {
+          const chunks = chunkText(doc.text, chunkSize);
+          chunks.forEach((chunk, idx) => {
+            allChunks.push({
+              docId: doc.id,
+              docTitle: doc.title,
+              chunkId: `${doc.id}-${idx + 1}`,
+              indexInDoc: idx + 1,
+              text: chunk
+            });
+          });
+        });
+
+        const vocabulary = buildVocabulary(allChunks, question);
+        const questionVector = makeVector(question, vocabulary);
+
+        const scored = allChunks.map(chunk => {
+          const vector = makeVector(chunk.text, vocabulary);
+          const score = cosineSimilarity(vector, questionVector);
+          return {
+            ...chunk,
+            vector,
+            score,
+            keywords: topKeywords(chunk.text, 4)
+          };
+        }).sort((a,b) => b.score - a.score);
+
+        const retrieved = scored.slice(0, Math.min(topK, scored.length));
+
+        const augmentedPrompt = [
+          "System: Answer the user using only the retrieved context. If the context is incomplete, say so.",
+          "",
+          "Retrieved context:",
+          ...retrieved.map((r, i) => `[${i + 1}] (${r.docTitle} / chunk ${r.indexInDoc}) ${r.text}`),
+          "",
+          `User question: ${question}`,
+          "",
+          "Answer:"
+        ].join("\n");
+
+        const noRagAnswer = generateNoRagAnswer(question);
+        const withRagAnswer = generateWithRagAnswer(question, retrieved);
+        const explanation = generateComparisonExplanation(retrieved);
+
         return {
-          id: idx + 1,
-          text: chunk,
-          vector,
-          score,
-          keywords: topKeywords(chunk)
+          question,
+          chunkSize,
+          topK,
+          allChunks,
+          vocabulary,
+          questionVector,
+          scored,
+          retrieved,
+          augmentedPrompt,
+          noRagAnswer,
+          withRagAnswer,
+          explanation
         };
-      }).sort((a,b) => b.score - a.score);
-
-      const topK = scored.slice(0, Math.min(3, scored.length));
-      const prompt = [
-        "System: Answer the user using only the retrieved context below.",
-        "",
-        "Retrieved context:",
-        ...topK.map((c, i) => `[Chunk ${i+1}] ${c.text}`),
-        "",
-        `User question: ${question}`,
-        "",
-        "Answer:"
-      ].join("\n");
-
-      const answer = generateAnswer(question, topK);
-
-      return { doc, question, chunks, vocab, questionVector, scored, topK, prompt, answer };
-    }
-
-    function generateAnswer(question, topK){
-      if(!topK.length){
-        return "I could not find relevant context in the retrieved source.";
       }
 
-      const joined = topK.map(c => c.text).join(" ");
-      const q = question.toLowerCase();
+      function generateNoRagAnswer(question) {
+        return `
+<span class="highlight">Typical non-RAG behavior</span><br>
+This answer is generic because the model is not using your specific source documents.
 
-      let answer = "";
+Question: ${escapeHtml(question)}
 
-      if(q.includes("how long") || q.includes("how many days") || q.includes("refund")){
-        const days = joined.match(/within\s+(\d+)\s+days/i);
-        const submit = joined.match(/submitted through ([^.]+)/i);
-        answer = `Based on the retrieved context, customers can request a refund ${days ? "within " + days[1] + " days of purchase" : "within the period stated in the source"}, and the request should be ${submit ? "submitted through " + submit[1].trim() : "submitted using the method described in the retrieved context"}.`;
-      } else if(q.includes("best time") || q.includes("visit")){
-        const time = joined.match(/best time to visit is ([^.]+)/i);
-        const risk = joined.match(/(pickpocket[^.]+)\./i);
-        answer = `Based on the retrieved context, the best time to visit is ${time ? time[1].trim() : "the period described in the source"}. Tourists should also watch out for ${risk ? risk[1].trim() : "the caution noted in the retrieved context"}.`;
-      } else if(q.includes("priority support") || q.includes("which users")){
-        const users = [];
-        if(/Olivia/i.test(joined)) users.push("Olivia (Pro)");
-        if(/Sara/i.test(joined)) users.push("Sara (Enterprise)");
-        if(/Malik/i.test(joined) && /priority support/i.test(joined.match(/User: Malik[\s\S]*?(?=User:|$)/)?.[0] || "")) users.push("Malik");
-        answer = users.length
-          ? `Based on the retrieved context, the users who have priority support are ${users.join(" and ")}.`
-          : `Based on the retrieved context, the users with priority support are the ones on plans that include that feature.`;
-      } else {
-        answer = `Grounded answer based on retrieved context: ${topK.map(c => c.text).join(" ")}`;
+Possible answer:
+Higher-tier plans often have priority support, refunds are usually limited to a set time period, and support hours are commonly standard business hours. But without retrieving the actual source documents, those details cannot be confirmed exactly.
+        `.trim();
       }
 
-      return answer;
-    }
+      function generateWithRagAnswer(question, retrieved) {
+        const combined = retrieved.map(r => r.text).join(" ");
+        const matches = [];
+        if (/Pro/i.test(combined)) matches.push("Pro");
+        if (/Enterprise/i.test(combined)) matches.push("Enterprise");
+        const refundDays = combined.match(/within\s+(\d+)\s+days/i);
+        const hours = combined.match(/Monday through Friday,\s*9 AM to 6 PM Eastern Time/i);
 
-    function renderStep1(state){
-      setStepState(1, "active");
-      ingestBox.textContent = state.doc;
-      metricDocs.textContent = "1";
-      setStepState(1, "done");
-    }
+        return `
+<span class="highlight">Grounded answer using retrieved context</span><br>
+Priority support is available to <strong>${matches.length ? matches.join(" and ") : "the plans named in the retrieved context"}</strong>.<br>
+${refundDays ? `Refunds can be requested <strong>within ${refundDays[1]} days of purchase</strong>.<br>` : ""}
+Refund requests must be submitted through the <strong>customer support portal</strong>.<br>
+${hours ? `Support business hours are <strong>${hours[0]}</strong>.` : ""}
+        `.trim();
+      }
 
-    function renderStep2(state){
-      setStepState(2, "active");
-      metricChunks.textContent = String(state.chunks.length);
-      chunkBox.innerHTML = state.chunks.map((chunk, i) => `
-        <div class="chunk">
-          <strong>Chunk ${i+1}</strong>
-          <div style="margin-top:6px;">${escapeHtml(chunk)}</div>
-        </div>
-      `).join("");
-      setStepState(2, "done");
-    }
+      function generateComparisonExplanation(retrieved) {
+        const sources = [...new Set(retrieved.map(r => r.docTitle))];
+        return `
+<span class="highlight">Why the RAG answer is better</span><br>
+The RAG answer is better because it is grounded in retrieved evidence from <strong>${escapeHtml(sources.join(", "))}</strong>.<br><br>
+The system did four important things:
+<br>
+1. searched the external documents at query time<br>
+2. retrieved the most relevant chunks<br>
+3. injected those chunks into the prompt<br>
+4. answered from that retrieved context
+        `.trim();
+      }
 
-    function renderStep3(state){
-      setStepState(3, "active");
-      vectorBox.innerHTML = `
-        <div class="chunk">
-          <strong>Question embedding (simulated)</strong>
-          <div class="chunk-meta">
-            <span class="pill">Top vocabulary: ${state.vocab.slice(0,8).join(", ")}</span>
+      function renderStep1(state) {
+        setFlow(1, "active");
+        sourceBox.innerHTML = docs.map(doc => `
+          <div class="chunk">
+            <div class="chunk-top">
+              <strong>${escapeHtml(doc.title)}</strong>
+              <span class="pill">${doc.text.length} chars</span>
+            </div>
+            <div>${escapeHtml(doc.text)}</div>
           </div>
-          <div class="vector-grid">
-            ${state.questionVector.slice(0,15).map(v => `<div class="vcell">${v}</div>`).join("")}
+        `).join("");
+        setFlow(1, "done");
+      }
+
+      function renderStep2(state) {
+        setFlow(2, "active");
+        mChunks.textContent = String(state.allChunks.length);
+        chunkBox.innerHTML = state.allChunks.map((chunk, idx) => `
+          <div class="chunk">
+            <div class="chunk-top">
+              <strong>Chunk ${idx + 1}</strong>
+              <span class="pill">${escapeHtml(chunk.docTitle)}</span>
+            </div>
+            <div>${escapeHtml(chunk.text)}</div>
           </div>
-        </div>
-        ${state.scored.slice(0, Math.min(4, state.scored.length)).map(c => `
-          <div class="chunk" style="margin-top:10px;">
-            <strong>Chunk ${c.id} vector</strong>
-            <div class="chunk-meta">
-              <span class="pill">Keywords: ${c.keywords.join(", ")}</span>
+        `).join("");
+        setFlow(2, "done");
+      }
+
+      function renderStep3(state) {
+        setFlow(3, "active");
+        vectorBox.innerHTML = `
+          <div class="chunk">
+            <div class="chunk-top">
+              <strong>Question vector (simulated)</strong>
+              <span class="pill">Vocabulary: ${escapeHtml(state.vocabulary.slice(0,8).join(", "))}</span>
             </div>
             <div class="vector-grid">
-              ${c.vector.slice(0,15).map(v => `<div class="vcell">${v}</div>`).join("")}
+              ${state.questionVector.slice(0, 24).map(v => `<div class="v">${v}</div>`).join("")}
             </div>
           </div>
-        `).join("")}
-      `;
-      setStepState(3, "done");
-    }
+          ${state.scored.slice(0, Math.min(4, state.scored.length)).map(chunk => `
+            <div class="chunk">
+              <div class="chunk-top">
+                <strong>${escapeHtml(chunk.docTitle)} / chunk ${chunk.indexInDoc}</strong>
+                <span class="pill">Keywords: ${escapeHtml(chunk.keywords.join(", "))}</span>
+              </div>
+              <div class="vector-grid">
+                ${chunk.vector.slice(0, 24).map(v => `<div class="v">${v}</div>`).join("")}
+              </div>
+            </div>
+          `).join("")}
+        `;
+        setFlow(3, "done");
+      }
 
-    function renderStep4(state){
-      setStepState(4, "active");
-      metricMatches.textContent = String(state.topK.length);
-      retrieveBox.innerHTML = state.scored.map(c => `
-        <div class="chunk">
-          <strong>Chunk ${c.id}</strong>
-          <div style="margin-top:6px;">${escapeHtml(c.text)}</div>
-          <div class="chunk-meta">
-            <span class="pill">Similarity: ${(c.score * 100).toFixed(1)}%</span>
-            <span class="pill">Keywords: ${c.keywords.join(", ")}</span>
+      function renderStep4(state) {
+        setFlow(4, "active");
+        mRetrieved.textContent = String(state.retrieved.length);
+        retrieveBox.innerHTML = state.scored.map(chunk => `
+          <div class="chunk">
+            <div class="chunk-top">
+              <strong>${escapeHtml(chunk.docTitle)} / chunk ${chunk.indexInDoc}</strong>
+              <span class="pill">Similarity ${(chunk.score * 100).toFixed(1)}%</span>
+            </div>
+            <div>${escapeHtml(chunk.text)}</div>
+            <div class="bar-wrap"><div class="bar" style="width:${Math.max(2, chunk.score * 100)}%"></div></div>
           </div>
-          <div class="sim-bar-wrap"><div class="sim-bar" style="width:${Math.max(3, c.score * 100)}%"></div></div>
-        </div>
-      `).join("");
-      setStepState(4, "done");
-    }
-
-    function renderStep5(state){
-      setStepState(5, "active");
-      metricContext.textContent = String(state.topK.length);
-      promptBox.textContent = state.prompt;
-      setStepState(5, "done");
-    }
-
-    function renderStep6(state){
-      setStepState(6, "active");
-      answerBox.innerHTML = `
-        <div><span class="highlight">User question</span> ${escapeHtml(state.question)}</div>
-        <div style="margin-top:12px;"><span class="highlight">Grounded answer</span></div>
-        <div style="margin-top:8px;">${escapeHtml(state.answer)}</div>
-        <div class="footer-note">
-          Notice: the answer is based on the retrieved chunks, not the full document. That is the heart of RAG.
-        </div>
-      `;
-      setStepState(6, "done");
-    }
-
-    function runAll(){
-      resetPipeline();
-      currentState = simulateRAG();
-      if(!currentState) return;
-      renderStep1(currentState);
-      renderStep2(currentState);
-      renderStep3(currentState);
-      renderStep4(currentState);
-      renderStep5(currentState);
-      renderStep6(currentState);
-    }
-
-    function runStep(){
-      if(!currentState){
-        currentState = simulateRAG();
-        if(!currentState) return;
+        `).join("");
+        setFlow(4, "done");
       }
 
-      stepModeIndex += 1;
-
-      if(stepModeIndex === 1) renderStep1(currentState);
-      else if(stepModeIndex === 2) renderStep2(currentState);
-      else if(stepModeIndex === 3) renderStep3(currentState);
-      else if(stepModeIndex === 4) renderStep4(currentState);
-      else if(stepModeIndex === 5) renderStep5(currentState);
-      else if(stepModeIndex === 6) renderStep6(currentState);
-      else {
-        stepModeIndex = 0;
-        resetPipeline();
-        currentState = null;
+      function renderStep5(state) {
+        setFlow(5, "active");
+        mContext.textContent = String(state.retrieved.length);
+        promptBox.textContent = state.augmentedPrompt;
+        setFlow(5, "done");
       }
-    }
 
-    function escapeHtml(str){
-      return str
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+      function renderStep6(state) {
+        setFlow(6, "active");
+        noRagBox.innerHTML = state.noRagAnswer;
+        withRagBox.innerHTML = state.withRagAnswer;
+        explainBox.innerHTML = state.explanation;
+        setFlow(6, "done");
+      }
 
-    runBtn.addEventListener("click", runAll);
-    stepBtn.addEventListener("click", runStep);
-    resetBtn.addEventListener("click", resetPipeline);
-    demoBtn.addEventListener("click", loadDemo);
+      function runAll() {
+        resetOutputs();
+        currentState = simulateRag();
+        if (!currentState) return;
+        renderStep1(currentState);
+        renderStep2(currentState);
+        renderStep3(currentState);
+        renderStep4(currentState);
+        renderStep5(currentState);
+        renderStep6(currentState);
+        guideIndex = 2;
+        renderGuide();
+      }
 
-    loadDemo();
-  </script>
+      function stepThrough() {
+        if (!currentState) {
+          currentState = simulateRag();
+          if (!currentState) return;
+        }
+
+        simStepIndex += 1;
+
+        if (simStepIndex === 1) renderStep1(currentState);
+        else if (simStepIndex === 2) renderStep2(currentState);
+        else if (simStepIndex === 3) renderStep3(currentState);
+        else if (simStepIndex === 4) renderStep4(currentState);
+        else if (simStepIndex === 5) renderStep5(currentState);
+        else if (simStepIndex === 6) {
+          renderStep6(currentState);
+          guideIndex = 3;
+          renderGuide();
+        } else {
+          resetOutputs();
+        }
+      }
+
+      runBtn.addEventListener("click", runAll);
+      stepBtn.addEventListener("click", stepThrough);
+
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      updateRangeLabels();
+      renderDocs();
+      renderGuide();
+    </script>
 </body>
 </html>
