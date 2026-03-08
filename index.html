@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAG Simulator v2.2 — Teaching Mode</title>
+  <title>RAG Simulator v2.3</title>
   <style>
     :root{
       --bg:#0b1020;
       --panel:#131a33;
-      --panel-2:#182145;
-      --soft:#222d57;
+      --panel2:#182145;
       --border:rgba(255,255,255,.08);
       --text:#edf2ff;
       --muted:#aeb8d8;
@@ -35,56 +34,35 @@
     }
 
     .app{
-      max-width:1560px;
+      max-width:1600px;
       margin:0 auto;
       padding:24px 18px 60px;
     }
 
-    .hero{
-      display:grid;
-      gap:14px;
-      margin-bottom:18px;
-    }
-
+    h1,h2,h3,p{margin-top:0}
+    .hero{margin-bottom:18px}
     .hero h1{
-      margin:0;
-      font-size:clamp(28px, 4vw, 46px);
+      font-size:clamp(28px,4vw,46px);
       line-height:1.03;
       letter-spacing:-0.03em;
+      margin-bottom:10px;
     }
-
     .hero p{
-      margin:0;
       color:var(--muted);
       max-width:980px;
       line-height:1.55;
-      font-size:15px;
     }
 
-    .mini-badges{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+    .badges{
+      display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;
     }
-
     .badge{
+      padding:7px 11px;
+      border-radius:999px;
       border:1px solid var(--border);
       background:rgba(255,255,255,.04);
-      color:#dfe6ff;
-      border-radius:999px;
-      padding:7px 11px;
       font-size:12px;
-    }
-
-    .top-teach{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:18px;
-      margin-bottom:18px;
-    }
-
-    @media (max-width:1100px){
-      .top-teach{grid-template-columns:1fr}
+      color:#dfe6ff;
     }
 
     .panel{
@@ -93,87 +71,61 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
-      backdrop-filter: blur(10px);
     }
-
     .panel-header{
       padding:16px 18px 12px;
       border-bottom:1px solid var(--border);
     }
-
     .panel-header h2{
-      margin:0;
       font-size:17px;
       letter-spacing:-0.02em;
+      margin-bottom:6px;
     }
-
     .panel-header p{
-      margin:6px 0 0;
       color:var(--muted);
       font-size:13px;
       line-height:1.45;
+      margin:0;
     }
-
     .panel-body{padding:16px 18px 18px}
 
-    .teach-grid{
+    .top-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:12px;
+      gap:18px;
+      margin-bottom:18px;
     }
-
-    @media (max-width:800px){
-      .teach-grid{grid-template-columns:1fr}
-    }
+    @media (max-width:1100px){ .top-grid{grid-template-columns:1fr} }
 
     .teach-card{
       border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
       border-radius:16px;
       padding:14px;
+      background:rgba(255,255,255,.03);
+      margin-top:12px;
     }
-
-    .teach-card h3{
-      margin:0 0 8px;
-      font-size:15px;
-    }
-
-    .teach-card p{
-      margin:0;
+    .teach-card p, .teach-card li{
       color:var(--muted);
-      line-height:1.55;
       font-size:13px;
+      line-height:1.55;
     }
 
-    .teach-card ul{
-      margin:8px 0 0;
-      padding-left:18px;
-      color:var(--muted);
-      line-height:1.55;
-      font-size:13px;
-    }
-
-    .layout{
+    .main-grid{
       display:grid;
       grid-template-columns:430px 1fr;
       gap:18px;
     }
+    @media (max-width:1200px){ .main-grid{grid-template-columns:1fr} }
 
-    @media (max-width:1200px){
-      .layout{grid-template-columns:1fr}
-    }
-
-    .stack{display:grid;gap:14px}
-
+    .stack{display:grid; gap:14px}
     label{
       display:block;
+      margin-bottom:8px;
       font-size:13px;
       font-weight:700;
-      margin-bottom:8px;
       color:#dfe7ff;
     }
-
-    textarea, input{
+    input, textarea{
       width:100%;
       border:1px solid rgba(255,255,255,.1);
       background:rgba(255,255,255,.04);
@@ -182,19 +134,15 @@
       padding:13px 14px;
       font-size:14px;
       outline:none;
-      transition:.2s ease;
     }
-
     textarea{
       min-height:150px;
       resize:vertical;
       line-height:1.52;
     }
-
-    textarea:focus, input:focus{
+    input:focus, textarea:focus{
       border-color:rgba(124,156,255,.72);
       box-shadow:0 0 0 4px rgba(124,156,255,.15);
-      background:rgba(255,255,255,.055);
     }
 
     .row{
@@ -202,35 +150,28 @@
       grid-template-columns:1fr 1fr;
       gap:12px;
     }
-
-    @media (max-width:700px){
-      .row{grid-template-columns:1fr}
-    }
+    @media (max-width:700px){ .row{grid-template-columns:1fr} }
 
     .range-wrap{
       border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
       border-radius:14px;
+      background:rgba(255,255,255,.03);
       padding:12px;
     }
-
     .range-top{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:8px;
       margin-bottom:8px;
+      gap:10px;
       font-size:13px;
     }
-
     .range-top .value{
       font-weight:800;
       color:#fff;
     }
-
     input[type="range"]{
       padding:0;
-      height:auto;
       background:transparent;
       border:none;
       box-shadow:none;
@@ -241,7 +182,6 @@
       gap:10px;
       flex-wrap:wrap;
     }
-
     button{
       border:none;
       cursor:pointer;
@@ -249,70 +189,50 @@
       padding:12px 16px;
       font-size:14px;
       font-weight:800;
-      transition:transform .15s ease, opacity .2s ease, box-shadow .2s ease;
+      transition:transform .15s ease;
     }
-
-    button:hover{transform:translateY(-1px)}
-    button:active{transform:translateY(0)}
-
+    button:hover{ transform:translateY(-1px); }
     .primary{
       background:linear-gradient(135deg, var(--accent), #9f7cff);
-      color:white;
-      box-shadow:0 10px 28px rgba(124,156,255,.28);
+      color:#fff;
     }
-
+    .success{
+      background:linear-gradient(135deg, #10b981, #34d399);
+      color:#08261b;
+    }
+    .warning{
+      background:linear-gradient(135deg, #f59e0b, #fbbf24);
+      color:#342100;
+    }
     .secondary{
       background:rgba(255,255,255,.06);
       color:var(--text);
       border:1px solid var(--border);
     }
 
-    .success{
-      background:linear-gradient(135deg, #10b981, #34d399);
-      color:#07261b;
-    }
-
-    .warning{
-      background:linear-gradient(135deg, #f59e0b, #fbbf24);
-      color:#342100;
-    }
-
     .docs-list{
       display:grid;
       gap:10px;
     }
-
     .doc-card{
       border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
       border-radius:14px;
+      background:rgba(255,255,255,.03);
       padding:12px;
     }
-
     .doc-card-top{
       display:flex;
       justify-content:space-between;
+      gap:8px;
       align-items:center;
-      gap:10px;
       margin-bottom:6px;
     }
-
     .doc-card-title{
       font-weight:800;
       font-size:14px;
     }
-
-    .doc-meta{
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .doc-card button{
-      padding:8px 10px;
-      border-radius:10px;
-      font-size:12px;
-      font-weight:700;
-    }
+    .small{ font-size:12px; color:var(--muted); }
+    .empty{ font-size:13px; color:var(--muted); font-style:italic; }
 
     .workspace{
       display:grid;
@@ -324,14 +244,8 @@
       grid-template-columns:repeat(6, 1fr);
       gap:12px;
     }
-
-    @media (max-width:1100px){
-      .metrics{grid-template-columns:repeat(3, 1fr)}
-    }
-
-    @media (max-width:700px){
-      .metrics{grid-template-columns:repeat(2, 1fr)}
-    }
+    @media (max-width:1100px){ .metrics{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:700px){ .metrics{grid-template-columns:repeat(2,1fr)} }
 
     .metric{
       border:1px solid var(--border);
@@ -339,13 +253,11 @@
       border-radius:16px;
       padding:14px;
     }
-
     .metric .label{
-      color:var(--muted);
       font-size:12px;
+      color:var(--muted);
       margin-bottom:6px;
     }
-
     .metric .value{
       font-size:24px;
       font-weight:900;
@@ -354,84 +266,54 @@
 
     .flow{
       display:grid;
-      grid-template-columns:repeat(6, 1fr);
+      grid-template-columns:repeat(6,1fr);
       gap:10px;
-      align-items:stretch;
     }
-
-    @media (max-width:1100px){
-      .flow{grid-template-columns:repeat(3, 1fr)}
-    }
-
-    @media (max-width:650px){
-      .flow{grid-template-columns:1fr}
-    }
+    @media (max-width:1100px){ .flow{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:650px){ .flow{grid-template-columns:1fr} }
 
     .flow-step{
       border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
       border-radius:16px;
       padding:14px;
-      min-height:122px;
-      transition:.25s ease;
+      background:rgba(255,255,255,.03);
+      min-height:118px;
+      transition:.2s ease;
     }
-
     .flow-step.active{
       background:linear-gradient(180deg, rgba(124,156,255,.13), rgba(124,156,255,.03));
       border-color:rgba(124,156,255,.35);
     }
-
     .flow-step.done{
       border-color:rgba(52,211,153,.35);
     }
-
     .flow-num{
-      width:28px;
-      height:28px;
-      border-radius:999px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-      font-weight:900;
+      width:28px;height:28px;border-radius:999px;
+      display:flex;align-items:center;justify-content:center;
       background:rgba(255,255,255,.08);
-      margin-bottom:10px;
+      font-size:12px;font-weight:900;margin-bottom:10px;
     }
-
-    .flow-step h3{
-      margin:0 0 6px;
-      font-size:14px;
-    }
-
     .flow-step p{
-      margin:0;
       color:var(--muted);
       font-size:12px;
       line-height:1.45;
+      margin:0;
     }
 
-    .split{
+    .bottom-grid{
       display:grid;
-      grid-template-columns:1fr 390px;
+      grid-template-columns:1.1fr .9fr;
       gap:18px;
     }
+    @media (max-width:1200px){ .bottom-grid{grid-template-columns:1fr} }
 
-    @media (max-width:1280px){
-      .split{grid-template-columns:1fr}
-    }
-
-    .cards{
-      display:grid;
-      gap:12px;
-    }
-
+    .cards{display:grid; gap:12px}
     .card{
       border:1px solid var(--border);
-      background:rgba(8,12,26,.45);
       border-radius:16px;
+      background:rgba(8,12,26,.45);
       overflow:hidden;
     }
-
     .card-header{
       padding:12px 14px;
       border-bottom:1px solid var(--border);
@@ -442,34 +324,30 @@
       align-items:center;
       flex-wrap:wrap;
     }
-
-    .card-header strong{font-size:14px}
-    .card-body{padding:14px}
+    .card-body{ padding:14px; }
 
     .codeish{
       white-space:pre-wrap;
       line-height:1.55;
       font-size:13px;
       color:#e3eaff;
-      max-height:360px;
+      max-height:340px;
       overflow:auto;
     }
 
     .chunk{
       border:1px solid var(--border);
-      background:rgba(255,255,255,.025);
       border-radius:14px;
       padding:12px;
+      background:rgba(255,255,255,.025);
       margin-bottom:10px;
     }
-
-    .chunk:last-child{margin-bottom:0}
-
+    .chunk:last-child{ margin-bottom:0; }
     .chunk-top{
       display:flex;
       justify-content:space-between;
-      align-items:center;
       gap:8px;
+      align-items:center;
       margin-bottom:8px;
       flex-wrap:wrap;
     }
@@ -478,10 +356,10 @@
       display:inline-flex;
       align-items:center;
       gap:6px;
+      padding:5px 8px;
       border-radius:999px;
       border:1px solid var(--border);
       background:rgba(255,255,255,.05);
-      padding:5px 8px;
       font-size:12px;
       color:#dce4ff;
     }
@@ -493,34 +371,29 @@
       background:rgba(255,255,255,.06);
       margin-top:8px;
     }
-
     .bar{
       height:100%;
-      background:linear-gradient(90deg, var(--accent), var(--accent2));
       width:0%;
-      transition:width .35s ease;
+      background:linear-gradient(90deg, var(--accent), var(--accent2));
+      transition:width .3s ease;
     }
 
     .vector-grid{
       display:grid;
-      grid-template-columns:repeat(8, 1fr);
+      grid-template-columns:repeat(8,1fr);
       gap:6px;
       margin-top:8px;
     }
-
-    @media (max-width:700px){
-      .vector-grid{grid-template-columns:repeat(4, 1fr)}
-    }
-
+    @media (max-width:700px){ .vector-grid{grid-template-columns:repeat(4,1fr)} }
     .v{
       height:26px;
-      border-radius:8px;
-      font-size:11px;
       display:flex;
       align-items:center;
       justify-content:center;
-      border:1px solid rgba(255,255,255,.05);
+      border-radius:8px;
+      font-size:11px;
       background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.05);
       color:#dbe4ff;
     }
 
@@ -529,16 +402,13 @@
       grid-template-columns:1fr 1fr;
       gap:18px;
     }
-
-    @media (max-width:900px){
-      .compare{grid-template-columns:1fr}
-    }
+    @media (max-width:900px){ .compare{grid-template-columns:1fr} }
 
     .answer-box{
-      min-height:220px;
+      min-height:240px;
       border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
       border-radius:16px;
+      background:rgba(255,255,255,.03);
       padding:14px;
       line-height:1.6;
       font-size:14px;
@@ -547,30 +417,32 @@
     .answer-head{
       display:flex;
       justify-content:space-between;
-      gap:10px;
       align-items:center;
-      margin-bottom:8px;
+      gap:10px;
       flex-wrap:wrap;
+      margin-bottom:8px;
     }
-
-    .score-good, .score-bad{
+    .score-good, .score-bad, .score-warn{
       padding:6px 10px;
       border-radius:999px;
       font-size:12px;
       font-weight:800;
       border:1px solid var(--border);
     }
-
     .score-good{
       background:rgba(52,211,153,.14);
       color:#b8f4db;
       border-color:rgba(52,211,153,.35);
     }
-
     .score-bad{
       background:rgba(251,113,133,.12);
       color:#ffc6d0;
       border-color:rgba(251,113,133,.28);
+    }
+    .score-warn{
+      background:rgba(251,191,36,.14);
+      color:#ffe7a7;
+      border-color:rgba(251,191,36,.28);
     }
 
     .highlight{
@@ -584,256 +456,146 @@
       margin-bottom:8px;
     }
 
-    .small{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .empty{
-      color:var(--muted);
-      font-size:13px;
-      font-style:italic;
-    }
-
-    .guide{
-      position:sticky;
-      top:18px;
-      align-self:start;
-      display:grid;
-      gap:12px;
-    }
-
-    .guide-card{
+    .ground-line{
       border:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(124,156,255,.10), rgba(255,255,255,.02));
-      border-radius:16px;
-      padding:14px;
-    }
-
-    .guide-title{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      margin-bottom:8px;
-    }
-
-    .guide-title strong{
-      font-size:15px;
-    }
-
-    .guide-step{
-      font-size:12px;
-      color:#fff;
-      padding:5px 8px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-      border:1px solid var(--border);
-      white-space:nowrap;
-    }
-
-    .guide-card p{
-      margin:0 0 12px;
-      color:#dbe3ff;
-      line-height:1.5;
-      font-size:13px;
-    }
-
-    .guide-box{
-      border:1px solid var(--border);
-      background:rgba(8,12,26,.45);
-      border-radius:14px;
-      padding:12px;
-    }
-
-    .guide-box h4{
-      margin:0 0 8px;
-      font-size:13px;
-    }
-
-    .guide-box ul{
-      margin:0;
-      padding-left:18px;
-      color:var(--muted);
-      line-height:1.5;
-      font-size:13px;
-    }
-
-    .guide-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-
-    .checklist{
-      display:grid;
-      gap:8px;
-    }
-
-    .check{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
+      background:rgba(255,255,255,.02);
       border-radius:12px;
-      padding:10px;
-      font-size:13px;
+      padding:10px 12px;
+      margin-bottom:10px;
+      cursor:pointer;
+      transition:.15s ease;
     }
-
-    .check .dot{
-      width:18px;
-      height:18px;
-      border-radius:999px;
-      background:rgba(255,255,255,.08);
-      border:1px solid var(--border);
-      flex:0 0 auto;
-      margin-top:1px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:11px;
-      color:#fff;
+    .ground-line:hover{
+      border-color:rgba(124,156,255,.35);
+      background:rgba(124,156,255,.06);
     }
-
-    .check.done .dot{
-      background:rgba(52,211,153,.18);
-      border-color:rgba(52,211,153,.38);
-      color:#9ff4ce;
-    }
-
-    .takeaway{
-      border:1px solid rgba(94,234,212,.18);
-      background:rgba(94,234,212,.06);
-      border-radius:14px;
-      padding:12px;
-      font-size:13px;
-      color:#dffcf7;
-      line-height:1.5;
+    .ground-line.active{
+      border-color:rgba(94,234,212,.45);
+      background:rgba(94,234,212,.08);
     }
 
     .evidence-list{
       display:grid;
       gap:10px;
     }
-
     .evidence-item{
       border:1px solid rgba(52,211,153,.28);
       background:rgba(52,211,153,.06);
       border-radius:14px;
       padding:12px;
       font-size:13px;
-      line-height:1.5;
+      line-height:1.55;
+      cursor:pointer;
+    }
+    .evidence-item.active{
+      outline:2px solid rgba(94,234,212,.35);
+      background:rgba(94,234,212,.08);
     }
 
-    .why-box{
+    .explain-card{
       border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      background:linear-gradient(180deg, rgba(124,156,255,.10), rgba(255,255,255,.02));
+      padding:14px;
+    }
+    .explain-card p, .explain-card li{
+      color:#dbe3ff;
       font-size:13px;
       line-height:1.55;
-      color:var(--muted);
     }
 
-    .why-box strong{
-      color:#fff;
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid var(--border);
+    }
+    .supported{
+      background:rgba(52,211,153,.12);
+      color:#b8f4db;
+      border-color:rgba(52,211,153,.30);
+    }
+    .partial{
+      background:rgba(251,191,36,.12);
+      color:#ffe7a7;
+      border-color:rgba(251,191,36,.28);
+    }
+    .unsupported{
+      background:rgba(251,113,133,.12);
+      color:#ffc6d0;
+      border-color:rgba(251,113,133,.28);
     }
 
     .section-title{
-      margin:0 0 10px;
       font-size:15px;
-      letter-spacing:-0.02em;
+      margin-bottom:10px;
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="hero">
-      <h1>RAG Simulator v2.2</h1>
+      <h1>RAG Simulator v2.3</h1>
       <p>
-        This version is designed to maximize understanding. It teaches what RAG is, what it is not, how retrieval changes the answer, and why “with RAG” is more grounded than “without RAG.”
+        This version makes the contrast more intelligent. It shows not just “without RAG” and “with RAG,” but also what is actually supported by source evidence, what is only guessed, and what cannot be verified from the documents.
       </p>
-      <div class="mini-badges">
-        <div class="badge">Stronger teaching content</div>
-        <div class="badge">Evidence-based comparison</div>
-        <div class="badge">Built-in guide</div>
-        <div class="badge">Better without/with RAG clarity</div>
+      <div class="badges">
+        <div class="badge">Supported vs unsupported facts</div>
+        <div class="badge">Clickable evidence mapping</div>
+        <div class="badge">Grounding meter</div>
+        <div class="badge">More realistic without-RAG behavior</div>
       </div>
     </div>
 
-    <div class="top-teach">
+    <div class="top-grid">
       <div class="panel">
         <div class="panel-header">
-          <h2>RAG in simple words</h2>
-          <p>Read this once before using the simulator.</p>
-        </div>
-        <div class="panel-body teach-grid">
-          <div class="teach-card">
-            <h3>What RAG is</h3>
-            <p>
-              RAG means the system first looks up relevant information from external knowledge, then gives that information to the LLM as context before the LLM answers.
-            </p>
-          </div>
-          <div class="teach-card">
-            <h3>What RAG is not</h3>
-            <p>
-              RAG is not the LLM magically “knowing” your PDF. The LLM does not directly read the whole knowledge base on every question. The system retrieves only the most relevant chunks first.
-            </p>
-          </div>
-          <div class="teach-card">
-            <h3>The easiest mental model</h3>
-            <p>
-              Think of RAG like an open-book test:
-            </p>
-            <ul>
-              <li>Without RAG = answer from memory</li>
-              <li>With RAG = first open the right pages, then answer</li>
-            </ul>
-          </div>
-          <div class="teach-card">
-            <h3>Why it matters</h3>
-            <p>
-              RAG helps answers become more specific, more grounded, and more tied to your actual documents instead of vague general knowledge.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <h2>What you should notice</h2>
-          <p>The simulator is most useful when you watch for these differences.</p>
+          <h2>How to think about RAG</h2>
+          <p>This is the clean mental model to keep in your head.</p>
         </div>
         <div class="panel-body">
           <div class="teach-card">
             <h3>Without RAG</h3>
-            <ul>
-              <li>more generic</li>
-              <li>more cautious or vague</li>
-              <li>less tied to your actual source docs</li>
-              <li>can sound reasonable without being exact</li>
-            </ul>
+            <p>
+              The model answers from general memory and learned patterns. It may sound reasonable, but it does not know your specific documents unless that information is provided at question time.
+            </p>
           </div>
-          <div class="teach-card" style="margin-top:12px;">
+          <div class="teach-card">
             <h3>With RAG</h3>
+            <p>
+              The system first searches your external knowledge, retrieves the most relevant chunks, inserts those chunks into the prompt, and then the model answers from that retrieved evidence.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>What makes this version better</h2>
+          <p>The difference is now much more concrete.</p>
+        </div>
+        <div class="panel-body">
+          <div class="teach-card">
             <ul>
-              <li>more exact</li>
-              <li>grounded in retrieved evidence</li>
-              <li>uses specific details from source docs</li>
-              <li>lets you inspect which chunks supported the answer</li>
+              <li>The “without RAG” side now acts like a model that cannot verify specifics.</li>
+              <li>The “with RAG” side breaks the answer into evidence-backed lines.</li>
+              <li>You can click an answer line and see which retrieved chunk supports it.</li>
+              <li>You can test questions that are fully supported, partially supported, or unsupported.</li>
             </ul>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="layout">
+    <div class="main-grid">
       <div class="panel">
         <div class="panel-header">
           <h2>Controls</h2>
-          <p>Load demo content, ask a question, and inspect the RAG pipeline.</p>
+          <p>Load demo content, ask a question, and inspect what the system can actually support.</p>
         </div>
         <div class="panel-body stack">
           <div>
@@ -848,7 +610,7 @@
                 <span class="value" id="chunkSizeValue">2 sentences</span>
               </div>
               <input id="chunkSize" type="range" min="1" max="4" step="1" value="2" />
-              <div class="small">Larger chunks give more context. Smaller chunks can retrieve more precisely.</div>
+              <div class="small">Smaller chunks can retrieve more precisely.</div>
             </div>
 
             <div class="range-wrap">
@@ -857,7 +619,7 @@
                 <span class="value" id="topKValue">3 chunks</span>
               </div>
               <input id="topK" type="range" min="1" max="5" step="1" value="3" />
-              <div class="small">This controls how many retrieved chunks get inserted into the prompt.</div>
+              <div class="small">How many chunks are inserted into the prompt.</div>
             </div>
           </div>
 
@@ -866,6 +628,16 @@
             <button class="primary" id="runBtn">Run full simulation</button>
             <button class="warning" id="stepBtn">Step through</button>
             <button class="secondary" id="resetBtn">Reset</button>
+          </div>
+
+          <div class="teach-card">
+            <h3>Try these example questions</h3>
+            <p class="small">Use these to test different RAG scenarios.</p>
+            <div class="btn-row" style="margin-top:10px;">
+              <button class="secondary example-q" data-q="Which plans have priority support, what are the refund rules, and what are support business hours?">Fully supported</button>
+              <button class="secondary example-q" data-q="Which users have priority support and what are their renewal dates?">Partially supported</button>
+              <button class="secondary example-q" data-q="What is the phone number for customer support?">Unsupported</button>
+            </div>
           </div>
 
           <div>
@@ -895,7 +667,7 @@
         <div class="panel">
           <div class="panel-header">
             <h2>Pipeline overview</h2>
-            <p>These are the main stages of RAG. Watch them light up as the simulation runs.</p>
+            <p>Watch the internal stages of RAG.</p>
           </div>
           <div class="panel-body">
             <div class="flow">
@@ -907,257 +679,175 @@
               <div class="flow-step" id="flow2">
                 <div class="flow-num">2</div>
                 <h3>Chunking</h3>
-                <p>Long docs are split into smaller searchable pieces.</p>
+                <p>Long docs split into smaller pieces.</p>
               </div>
               <div class="flow-step" id="flow3">
                 <div class="flow-num">3</div>
                 <h3>Embeddings</h3>
-                <p>Chunks become searchable numeric representations.</p>
+                <p>Chunks become searchable representations.</p>
               </div>
               <div class="flow-step" id="flow4">
                 <div class="flow-num">4</div>
                 <h3>Retrieve</h3>
-                <p>The best matching chunks are selected.</p>
+                <p>Relevant chunks are selected at query time.</p>
               </div>
               <div class="flow-step" id="flow5">
                 <div class="flow-num">5</div>
                 <h3>Augment prompt</h3>
-                <p>The selected chunks are inserted into the prompt.</p>
+                <p>Retrieved chunks are inserted into the prompt.</p>
               </div>
               <div class="flow-step" id="flow6">
                 <div class="flow-num">6</div>
                 <h3>Generate</h3>
-                <p>The LLM answers using retrieved context.</p>
+                <p>The model answers from that context.</p>
               </div>
             </div>
           </div>
         </div>
 
         <div class="metrics">
-          <div class="metric">
-            <div class="label">Documents</div>
-            <div class="value" id="mDocs">0</div>
-          </div>
-          <div class="metric">
-            <div class="label">Total chunks</div>
-            <div class="value" id="mChunks">0</div>
-          </div>
-          <div class="metric">
-            <div class="label">Retrieved</div>
-            <div class="value" id="mRetrieved">0</div>
-          </div>
-          <div class="metric">
-            <div class="label">Chunk size</div>
-            <div class="value" id="mChunkSize">2</div>
-          </div>
-          <div class="metric">
-            <div class="label">Top-K</div>
-            <div class="value" id="mTopK">3</div>
-          </div>
-          <div class="metric">
-            <div class="label">Prompt context</div>
-            <div class="value" id="mContext">0</div>
-          </div>
+          <div class="metric"><div class="label">Documents</div><div class="value" id="mDocs">0</div></div>
+          <div class="metric"><div class="label">Chunks</div><div class="value" id="mChunks">0</div></div>
+          <div class="metric"><div class="label">Retrieved</div><div class="value" id="mRetrieved">0</div></div>
+          <div class="metric"><div class="label">Chunk size</div><div class="value" id="mChunkSize">2</div></div>
+          <div class="metric"><div class="label">Top-K</div><div class="value" id="mTopK">3</div></div>
+          <div class="metric"><div class="label">Grounding</div><div class="value" id="mGrounding">0%</div></div>
         </div>
 
-        <div class="split">
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Simulator output</h2>
-              <p>This shows what the system is doing internally.</p>
-            </div>
-            <div class="panel-body cards">
-              <div class="card">
-                <div class="card-header">
-                  <strong>1. Source documents</strong>
-                  <span class="small">External knowledge provided to the system</span>
-                </div>
-                <div class="card-body codeish" id="sourceBox"><span class="empty">Run the simulator to see source documents.</span></div>
+        <div class="bottom-grid">
+          <div class="cards">
+            <div class="card">
+              <div class="card-header">
+                <strong>Internal pipeline details</strong>
+                <span class="small">This is what the system is doing behind the scenes.</span>
               </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <strong>2. Chunks</strong>
-                  <span class="small">The retrievable pieces</span>
-                </div>
-                <div class="card-body codeish" id="chunkBox"><span class="empty">Chunks will appear here.</span></div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <strong>3. Embeddings (simulated)</strong>
-                  <span class="small">How chunks become searchable</span>
-                </div>
-                <div class="card-body" id="vectorBox"><span class="empty">Vectors will appear here.</span></div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <strong>4. Retrieval results</strong>
-                  <span class="small">Which chunks matched the question best</span>
-                </div>
-                <div class="card-body" id="retrieveBox"><span class="empty">Retrieved chunks will appear here.</span></div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <strong>5. Augmented prompt</strong>
-                  <span class="small">What the LLM actually receives</span>
-                </div>
-                <div class="card-body codeish" id="promptBox"><span class="empty">Augmented prompt will appear here.</span></div>
-              </div>
-
-              <div class="card">
-                <div class="card-header">
-                  <strong>6. Answer comparison</strong>
-                  <span class="small">This is where the value of RAG becomes obvious</span>
-                </div>
-                <div class="card-body">
-                  <div class="compare">
-                    <div>
-                      <div class="section-title">Without RAG</div>
-                      <div class="answer-box" id="noRagBox"><span class="empty">Run the simulator to compare answers.</span></div>
-                    </div>
-                    <div>
-                      <div class="section-title">With RAG</div>
-                      <div class="answer-box" id="withRagBox"><span class="empty">Run the simulator to compare answers.</span></div>
-                    </div>
+              <div class="card-body">
+                <div class="cards">
+                  <div class="card">
+                    <div class="card-header"><strong>1. Source documents</strong></div>
+                    <div class="card-body codeish" id="sourceBox"><span class="empty">Run the simulator to see source documents.</span></div>
                   </div>
 
-                  <div style="margin-top:18px;">
-                    <div class="section-title">Evidence supporting the RAG answer</div>
-                    <div class="answer-box" id="evidenceBox"><span class="empty">Retrieved evidence will appear here.</span></div>
+                  <div class="card">
+                    <div class="card-header"><strong>2. Chunks</strong></div>
+                    <div class="card-body codeish" id="chunkBox"><span class="empty">Chunks will appear here.</span></div>
                   </div>
 
-                  <div style="margin-top:18px;">
-                    <div class="section-title">Why the difference matters</div>
-                    <div class="answer-box" id="explainBox"><span class="empty">The explanation will appear here.</span></div>
+                  <div class="card">
+                    <div class="card-header"><strong>3. Embeddings (simulated)</strong></div>
+                    <div class="card-body" id="vectorBox"><span class="empty">Vectors will appear here.</span></div>
+                  </div>
+
+                  <div class="card">
+                    <div class="card-header"><strong>4. Retrieval results</strong></div>
+                    <div class="card-body" id="retrieveBox"><span class="empty">Retrieved chunks will appear here.</span></div>
+                  </div>
+
+                  <div class="card">
+                    <div class="card-header"><strong>5. Augmented prompt</strong></div>
+                    <div class="card-body codeish" id="promptBox"><span class="empty">Augmented prompt will appear here.</span></div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="guide">
-            <div class="guide-card">
-              <div class="guide-title">
-                <strong>Built-in guide</strong>
-                <span class="guide-step" id="guideStepBadge">Step 1 of 5</span>
+          <div class="cards">
+            <div class="card">
+              <div class="card-header">
+                <strong>Question support status</strong>
+                <span class="small">How answerable is this question from the docs?</span>
               </div>
-              <p id="guideText">
-                Click <strong>Load demo data</strong>. This gives you multiple source documents plus a question, so you can focus on learning RAG instead of writing content first.
+              <div class="card-body" id="supportStatusBox">
+                <span class="empty">Run the simulator to evaluate support level.</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <strong>Without RAG vs With RAG</strong>
+                <span class="small">The key comparison</span>
+              </div>
+              <div class="card-body">
+                <div class="compare">
+                  <div class="answer-box" id="noRagBox"><span class="empty">Run the simulator to compare answers.</span></div>
+                  <div class="answer-box" id="withRagBox"><span class="empty">Run the simulator to compare answers.</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <strong>Evidence supporting the RAG answer</strong>
+                <span class="small">Click evidence or answer lines to connect them</span>
+              </div>
+              <div class="card-body" id="evidenceBox">
+                <span class="empty">Retrieved evidence will appear here.</span>
+              </div>
+            </div>
+
+            <div class="explain-card">
+              <h3>Why this is more intelligent now</h3>
+              <p id="explainBox">
+                The simulator will explain what is actually supported by the documents versus what would only be guessed without retrieval.
               </p>
-
-              <div class="guide-box">
-                <h4>What to do now</h4>
-                <ul id="guideTodo">
-                  <li>Click Load demo data.</li>
-                  <li>Look at the documents.</li>
-                  <li>Read the question.</li>
-                </ul>
-              </div>
-
-              <div class="guide-actions">
-                <button class="primary" id="nextGuideBtn">Next guide step</button>
-                <button class="secondary" id="restartGuideBtn">Restart guide</button>
-              </div>
-            </div>
-
-            <div class="guide-card">
-              <div class="guide-title">
-                <strong>Checklist</strong>
-                <span class="guide-step">Progress</span>
-              </div>
-              <div class="checklist" id="checklist"></div>
-            </div>
-
-            <div class="guide-card">
-              <div class="guide-title">
-                <strong>What am I looking at?</strong>
-                <span class="guide-step">Current teaching</span>
-              </div>
-              <p id="whatYouSee">
-                You are looking at a simulator that shows both the inside of the RAG pipeline and the resulting answer difference.
-              </p>
-              <div class="takeaway" id="takeawayBox">
-                Key takeaway: RAG means retrieve relevant external context first, then let the LLM answer using that context.
-              </div>
-            </div>
-
-            <div class="guide-card">
-              <div class="guide-title">
-                <strong>Most important difference</strong>
-                <span class="guide-step">Remember this</span>
-              </div>
-              <div class="why-box">
-                <strong>Without RAG:</strong> the answer mostly comes from general model memory.<br><br>
-                <strong>With RAG:</strong> the answer is based on retrieved evidence from your external documents.
-              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      const questionInput = document.getElementById("questionInput");
-      const chunkSizeInput = document.getElementById("chunkSize");
-      const topKInput = document.getElementById("topK");
-      const chunkSizeValue = document.getElementById("chunkSizeValue");
-      const topKValue = document.getElementById("topKValue");
+  <script>
+    const questionInput = document.getElementById("questionInput");
+    const chunkSizeInput = document.getElementById("chunkSize");
+    const topKInput = document.getElementById("topK");
+    const chunkSizeValue = document.getElementById("chunkSizeValue");
+    const topKValue = document.getElementById("topKValue");
 
-      const demoBtn = document.getElementById("demoBtn");
-      const runBtn = document.getElementById("runBtn");
-      const stepBtn = document.getElementById("stepBtn");
-      const resetBtn = document.getElementById("resetBtn");
+    const demoBtn = document.getElementById("demoBtn");
+    const runBtn = document.getElementById("runBtn");
+    const stepBtn = document.getElementById("stepBtn");
+    const resetBtn = document.getElementById("resetBtn");
 
-      const docsList = document.getElementById("docsList");
-      const docTitleInput = document.getElementById("docTitleInput");
-      const docTextInput = document.getElementById("docTextInput");
-      const saveDocBtn = document.getElementById("saveDocBtn");
-      const newDocBtn = document.getElementById("newDocBtn");
-      const deleteDocBtn = document.getElementById("deleteDocBtn");
+    const docsList = document.getElementById("docsList");
+    const docTitleInput = document.getElementById("docTitleInput");
+    const docTextInput = document.getElementById("docTextInput");
+    const saveDocBtn = document.getElementById("saveDocBtn");
+    const newDocBtn = document.getElementById("newDocBtn");
+    const deleteDocBtn = document.getElementById("deleteDocBtn");
 
-      const sourceBox = document.getElementById("sourceBox");
-      const chunkBox = document.getElementById("chunkBox");
-      const vectorBox = document.getElementById("vectorBox");
-      const retrieveBox = document.getElementById("retrieveBox");
-      const promptBox = document.getElementById("promptBox");
+    const sourceBox = document.getElementById("sourceBox");
+    const chunkBox = document.getElementById("chunkBox");
+    const vectorBox = document.getElementById("vectorBox");
+    const retrieveBox = document.getElementById("retrieveBox");
+    const promptBox = document.getElementById("promptBox");
 
-      const noRagBox = document.getElementById("noRagBox");
-      const withRagBox = document.getElementById("withRagBox");
-      const evidenceBox = document.getElementById("evidenceBox");
-      const explainBox = document.getElementById("explainBox");
+    const noRagBox = document.getElementById("noRagBox");
+    const withRagBox = document.getElementById("withRagBox");
+    const evidenceBox = document.getElementById("evidenceBox");
+    const explainBox = document.getElementById("explainBox");
+    const supportStatusBox = document.getElementById("supportStatusBox");
 
-      const mDocs = document.getElementById("mDocs");
-      const mChunks = document.getElementById("mChunks");
-      const mRetrieved = document.getElementById("mRetrieved");
-      const mChunkSize = document.getElementById("mChunkSize");
-      const mTopK = document.getElementById("mTopK");
-      const mContext = document.getElementById("mContext");
+    const mDocs = document.getElementById("mDocs");
+    const mChunks = document.getElementById("mChunks");
+    const mRetrieved = document.getElementById("mRetrieved");
+    const mChunkSize = document.getElementById("mChunkSize");
+    const mTopK = document.getElementById("mTopK");
+    const mGrounding = document.getElementById("mGrounding");
 
-      const guideStepBadge = document.getElementById("guideStepBadge");
-      const guideText = document.getElementById("guideText");
-      const guideTodo = document.getElementById("guideTodo");
-      const nextGuideBtn = document.getElementById("nextGuideBtn");
-      const restartGuideBtn = document.getElementById("restartGuideBtn");
-      const checklist = document.getElementById("checklist");
-      const whatYouSee = document.getElementById("whatYouSee");
-      const takeawayBox = document.getElementById("takeawayBox");
+    let docs = [];
+    let selectedDocId = null;
+    let currentState = null;
+    let simStepIndex = 0;
 
-      let docs = [];
-      let selectedDocId = null;
-      let currentState = null;
-      let simStepIndex = 0;
-      let guideIndex = 0;
-
-      const demoData = {
-        question: "Which plans have priority support, what are the refund rules, and what are support business hours?",
-        docs: [
-          {
-            id: crypto.randomUUID(),
-            title: "Policy PDF",
-            text: `Refund Policy
+    const demoData = {
+      question: "Which plans have priority support, what are the refund rules, and what are support business hours?",
+      docs: [
+        {
+          id: crypto.randomUUID(),
+          title: "Policy PDF",
+          text: `Refund Policy
 
 Customers may request a refund within 30 days of purchase.
 Refund requests must be submitted through the customer support portal.
@@ -1165,11 +855,11 @@ Digital products are non-refundable after download unless the file is defective.
 Enterprise contracts follow separate terms negotiated in the MSA.
 Priority support is available only to Pro and Enterprise customers.
 Business hours for support are Monday through Friday, 9 AM to 6 PM Eastern Time.`
-          },
-          {
-            id: crypto.randomUUID(),
-            title: "Customer Plan Database Export",
-            text: `Customer Plan Data
+        },
+        {
+          id: crypto.randomUUID(),
+          title: "Customer Plan Database Export",
+          text: `Customer Plan Data
 
 User: Olivia
 Plan: Pro
@@ -1185,553 +875,647 @@ User: Sara
 Plan: Enterprise
 Renewal Date: 2026-09-30
 Features: SSO, audit logs, dedicated CSM, priority support`
-          },
-          {
-            id: crypto.randomUUID(),
-            title: "General Help Center Doc",
-            text: `Support Overview
+        },
+        {
+          id: crypto.randomUUID(),
+          title: "General Help Center Doc",
+          text: `Support Overview
 
 The support team helps customers resolve billing, technical, and access issues.
 Users on paid tiers generally receive faster service than free users.
 The help center contains product setup instructions, account recovery guidance, and billing FAQs.
 Support requests outside business hours are answered the next business day.
 Escalations may be routed to specialist teams depending on plan type and issue severity.`
-          }
-        ]
-      };
-
-      const guideSteps = [
-        {
-          title: "Step 1 of 5",
-          text: "Load the demo first. That gives you external data sources and a question.",
-          todo: ["Click Load demo data.", "Read the question.", "See that RAG starts with external knowledge."],
-          see: "You are looking at the input to RAG: a user question plus external sources.",
-          takeaway: "Key takeaway: RAG begins with external knowledge, not just the model’s memory."
-        },
-        {
-          title: "Step 2 of 5",
-          text: "Run the simulation. This will fill every stage of the pipeline.",
-          todo: ["Click Run full simulation.", "Watch the pipeline light up.", "Scroll to answer comparison."],
-          see: "You are seeing the full RAG lifecycle from documents to final answer.",
-          takeaway: "Key takeaway: the retrieval step happens before the LLM answers."
-        },
-        {
-          title: "Step 3 of 5",
-          text: "Inspect Retrieval results and Augmented prompt. These two sections explain most of RAG.",
-          todo: ["Find Retrieval results.", "See which chunks scored highest.", "Open the Augmented prompt."],
-          see: "Retrieval shows what was selected. The augmented prompt shows what the LLM actually got.",
-          takeaway: "Key takeaway: the LLM answers from retrieved chunks, not from the full raw documents."
-        },
-        {
-          title: "Step 4 of 5",
-          text: "Compare Without RAG and With RAG carefully.",
-          todo: ["Read the generic answer.", "Read the grounded answer.", "Look at the evidence box."],
-          see: "The grounded answer should be more exact because it is tied to retrieved evidence.",
-          takeaway: "Key takeaway: with RAG, you can inspect what evidence supported the answer."
-        },
-        {
-          title: "Step 5 of 5",
-          text: "Experiment with chunk size and top-K, then try your own documents.",
-          todo: ["Change chunk size.", "Change top-K.", "Run again and compare retrieval quality."],
-          see: "Chunking and retrieval strategy heavily influence answer quality.",
-          takeaway: "Key takeaway: good RAG is not only about the LLM — retrieval quality matters a lot."
         }
-      ];
+      ]
+    };
 
-      function updateRangeLabels() {
-        chunkSizeValue.textContent = `${chunkSizeInput.value} sentence${chunkSizeInput.value === "1" ? "" : "s"}`;
-        topKValue.textContent = `${topKInput.value} chunk${topKInput.value === "1" ? "" : "s"}`;
-        mChunkSize.textContent = chunkSizeInput.value;
-        mTopK.textContent = topKInput.value;
+    function updateRangeLabels() {
+      chunkSizeValue.textContent = `${chunkSizeInput.value} sentence${chunkSizeInput.value === "1" ? "" : "s"}`;
+      topKValue.textContent = `${topKInput.value} chunk${topKInput.value === "1" ? "" : "s"}`;
+      mChunkSize.textContent = chunkSizeInput.value;
+      mTopK.textContent = topKInput.value;
+    }
+    chunkSizeInput.addEventListener("input", updateRangeLabels);
+    topKInput.addEventListener("input", updateRangeLabels);
+
+    function renderDocs() {
+      docsList.innerHTML = "";
+      mDocs.textContent = String(docs.length);
+
+      if (!docs.length) {
+        docsList.innerHTML = `<div class="empty">No documents yet. Load demo or create one.</div>`;
+        return;
       }
 
-      chunkSizeInput.addEventListener("input", updateRangeLabels);
-      topKInput.addEventListener("input", updateRangeLabels);
-
-      function renderGuide() {
-        const step = guideSteps[guideIndex];
-        guideStepBadge.textContent = step.title;
-        guideText.textContent = step.text;
-        guideTodo.innerHTML = step.todo.map(item => `<li>${item}</li>`).join("");
-        whatYouSee.textContent = step.see;
-        takeawayBox.textContent = step.takeaway;
-        renderChecklist();
-      }
-
-      function renderChecklist() {
-        checklist.innerHTML = guideSteps.map((step, index) => {
-          const done = index < guideIndex;
-          const current = index === guideIndex;
-          return `
-            <div class="check ${done ? "done" : ""}">
-              <div class="dot">${done ? "✓" : current ? "•" : index + 1}</div>
-              <div>${step.title}</div>
+      docs.forEach(doc => {
+        const card = document.createElement("div");
+        card.className = "doc-card";
+        card.innerHTML = `
+          <div class="doc-card-top">
+            <div>
+              <div class="doc-card-title">${escapeHtml(doc.title)}</div>
+              <div class="small">${doc.text.length} characters</div>
             </div>
-          `;
-        }).join("");
-      }
-
-      nextGuideBtn.addEventListener("click", () => {
-        guideIndex = (guideIndex + 1) % guideSteps.length;
-        renderGuide();
-      });
-
-      restartGuideBtn.addEventListener("click", () => {
-        guideIndex = 0;
-        renderGuide();
-      });
-
-      function renderDocs() {
-        docsList.innerHTML = "";
-        mDocs.textContent = String(docs.length);
-
-        if (!docs.length) {
-          docsList.innerHTML = `<div class="empty">No documents yet. Load demo or create one.</div>`;
-          return;
-        }
-
-        docs.forEach(doc => {
-          const card = document.createElement("div");
-          card.className = "doc-card";
-          card.innerHTML = `
-            <div class="doc-card-top">
-              <div>
-                <div class="doc-card-title">${escapeHtml(doc.title)}</div>
-                <div class="doc-meta">${doc.text.length} characters</div>
-              </div>
-              <button class="secondary">Select</button>
-            </div>
-            <div class="small">${escapeHtml(doc.text.slice(0, 120))}${doc.text.length > 120 ? "..." : ""}</div>
-          `;
-          card.querySelector("button").addEventListener("click", () => {
-            selectedDocId = doc.id;
-            loadSelectedDoc();
-          });
-          docsList.appendChild(card);
+            <button class="secondary">Select</button>
+          </div>
+          <div class="small">${escapeHtml(doc.text.slice(0, 120))}${doc.text.length > 120 ? "..." : ""}</div>
+        `;
+        card.querySelector("button").addEventListener("click", () => {
+          selectedDocId = doc.id;
+          loadSelectedDoc();
         });
+        docsList.appendChild(card);
+      });
+    }
+
+    function loadSelectedDoc() {
+      const doc = docs.find(d => d.id === selectedDocId);
+      if (!doc) return;
+      docTitleInput.value = doc.title;
+      docTextInput.value = doc.text;
+    }
+
+    function clearDocEditor() {
+      selectedDocId = null;
+      docTitleInput.value = "";
+      docTextInput.value = "";
+    }
+
+    function saveDoc() {
+      const title = docTitleInput.value.trim();
+      const text = docTextInput.value.trim();
+      if (!title || !text) {
+        alert("Please enter both a document title and document text.");
+        return;
       }
 
-      function loadSelectedDoc() {
+      if (selectedDocId) {
         const doc = docs.find(d => d.id === selectedDocId);
-        if (!doc) return;
-        docTitleInput.value = doc.title;
-        docTextInput.value = doc.text;
-      }
-
-      function clearDocEditor() {
-        selectedDocId = null;
-        docTitleInput.value = "";
-        docTextInput.value = "";
-      }
-
-      function saveDoc() {
-        const title = docTitleInput.value.trim();
-        const text = docTextInput.value.trim();
-        if (!title || !text) {
-          alert("Please enter both a document title and document text.");
-          return;
+        if (doc) {
+          doc.title = title;
+          doc.text = text;
         }
-
-        if (selectedDocId) {
-          const doc = docs.find(d => d.id === selectedDocId);
-          if (doc) {
-            doc.title = title;
-            doc.text = text;
-          }
-        } else {
-          const newDoc = { id: crypto.randomUUID(), title, text };
-          docs.push(newDoc);
-          selectedDocId = newDoc.id;
-        }
-
-        renderDocs();
+      } else {
+        const newDoc = { id: crypto.randomUUID(), title, text };
+        docs.push(newDoc);
+        selectedDocId = newDoc.id;
       }
+      renderDocs();
+    }
 
-      function deleteSelectedDoc() {
-        if (!selectedDocId) {
-          alert("Select a document first.");
-          return;
-        }
-        docs = docs.filter(d => d.id !== selectedDocId);
-        clearDocEditor();
-        renderDocs();
+    function deleteSelectedDoc() {
+      if (!selectedDocId) {
+        alert("Select a document first.");
+        return;
       }
+      docs = docs.filter(d => d.id !== selectedDocId);
+      clearDocEditor();
+      renderDocs();
+    }
 
-      saveDocBtn.addEventListener("click", saveDoc);
-      newDocBtn.addEventListener("click", clearDocEditor);
-      deleteDocBtn.addEventListener("click", deleteSelectedDoc);
+    saveDocBtn.addEventListener("click", saveDoc);
+    newDocBtn.addEventListener("click", clearDocEditor);
+    deleteDocBtn.addEventListener("click", deleteSelectedDoc);
 
-      demoBtn.addEventListener("click", () => {
-        docs = structuredClone(demoData.docs);
-        selectedDocId = docs[0].id;
-        questionInput.value = demoData.question;
-        chunkSizeInput.value = 2;
-        topKInput.value = 3;
-        updateRangeLabels();
-        renderDocs();
-        loadSelectedDoc();
-        resetOutputs();
-        guideIndex = 1;
-        renderGuide();
+    demoBtn.addEventListener("click", () => {
+      docs = structuredClone(demoData.docs);
+      selectedDocId = docs[0].id;
+      questionInput.value = demoData.question;
+      chunkSizeInput.value = 2;
+      topKInput.value = 3;
+      updateRangeLabels();
+      renderDocs();
+      loadSelectedDoc();
+      resetOutputs();
+    });
+
+    document.querySelectorAll(".example-q").forEach(btn => {
+      btn.addEventListener("click", () => {
+        questionInput.value = btn.dataset.q;
       });
+    });
 
-      function resetOutputs() {
-        currentState = null;
-        simStepIndex = 0;
-        sourceBox.innerHTML = `<span class="empty">Run the simulator to see source documents.</span>`;
-        chunkBox.innerHTML = `<span class="empty">Chunks will appear here.</span>`;
-        vectorBox.innerHTML = `<span class="empty">Vectors will appear here.</span>`;
-        retrieveBox.innerHTML = `<span class="empty">Retrieved chunks will appear here.</span>`;
-        promptBox.innerHTML = `<span class="empty">Augmented prompt will appear here.</span>`;
-        noRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
-        withRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
-        evidenceBox.innerHTML = `<span class="empty">Retrieved evidence will appear here.</span>`;
-        explainBox.innerHTML = `<span class="empty">The explanation will appear here.</span>`;
-        mChunks.textContent = "0";
-        mRetrieved.textContent = "0";
-        mContext.textContent = "0";
-        for (let i = 1; i <= 6; i++) {
-          document.getElementById("flow" + i).classList.remove("active", "done");
-        }
+    function resetOutputs() {
+      currentState = null;
+      simStepIndex = 0;
+      sourceBox.innerHTML = `<span class="empty">Run the simulator to see source documents.</span>`;
+      chunkBox.innerHTML = `<span class="empty">Chunks will appear here.</span>`;
+      vectorBox.innerHTML = `<span class="empty">Vectors will appear here.</span>`;
+      retrieveBox.innerHTML = `<span class="empty">Retrieved chunks will appear here.</span>`;
+      promptBox.innerHTML = `<span class="empty">Augmented prompt will appear here.</span>`;
+      noRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
+      withRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
+      evidenceBox.innerHTML = `<span class="empty">Retrieved evidence will appear here.</span>`;
+      explainBox.innerHTML = `The simulator will explain what is actually supported by the documents versus what would only be guessed without retrieval.`;
+      supportStatusBox.innerHTML = `<span class="empty">Run the simulator to evaluate support level.</span>`;
+      mChunks.textContent = "0";
+      mRetrieved.textContent = "0";
+      mGrounding.textContent = "0%";
+
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById("flow" + i).classList.remove("active", "done");
+      }
+    }
+    resetBtn.addEventListener("click", resetOutputs);
+
+    function setFlow(step, state) {
+      const el = document.getElementById("flow" + step);
+      el.classList.remove("active", "done");
+      if (state === "active") el.classList.add("active");
+      if (state === "done") el.classList.add("done");
+    }
+
+    function tokenize(text) {
+      return (text.toLowerCase().match(/[a-z0-9]+/g) || []).filter(Boolean);
+    }
+
+    function sentenceSplit(text) {
+      return text.replace(/\n+/g, " ").split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
+    }
+
+    function chunkText(text, size) {
+      const sentences = sentenceSplit(text);
+      const chunks = [];
+      if (!sentences.length) return [text];
+      for (let i = 0; i < sentences.length; i += size) {
+        chunks.push(sentences.slice(i, i + size).join(" "));
+      }
+      return chunks;
+    }
+
+    function unique(arr) {
+      return [...new Set(arr)];
+    }
+
+    function buildVocabulary(allChunks, question) {
+      return unique([...allChunks.flatMap(c => tokenize(c.text)), ...tokenize(question)])
+        .filter(w => w.length > 2)
+        .slice(0, 64);
+    }
+
+    function makeVector(text, vocabulary) {
+      const tokens = tokenize(text);
+      return vocabulary.map(word => tokens.filter(t => t === word).length);
+    }
+
+    function cosineSimilarity(a, b) {
+      let dot = 0, ma = 0, mb = 0;
+      for (let i = 0; i < a.length; i++) {
+        dot += a[i] * b[i];
+        ma += a[i] * a[i];
+        mb += b[i] * b[i];
+      }
+      if (ma === 0 || mb === 0) return 0;
+      return dot / (Math.sqrt(ma) * Math.sqrt(mb));
+    }
+
+    function topKeywords(text, n = 4) {
+      const counts = {};
+      tokenize(text).filter(w => w.length > 2).forEach(w => counts[w] = (counts[w] || 0) + 1);
+      return Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, n).map(([w]) => w);
+    }
+
+    function extractFacts(retrieved, question) {
+      const combined = retrieved.map(r => r.text).join(" ");
+      const q = question.toLowerCase();
+
+      const facts = [];
+
+      const hasPrioritySupport = /priority support/i.test(combined);
+      const hasRefundDays = /within\s+(\d+)\s+days/i.test(combined);
+      const hasRefundPortal = /customer support portal/i.test(combined);
+      const hasBusinessHours = /Monday through Friday,\s*9 AM to 6 PM Eastern Time/i.test(combined);
+      const hasUserRenewal = /Renewal Date:/i.test(combined);
+      const hasPhone = /phone|call|telephone/i.test(combined);
+
+      if (q.includes("priority support")) {
+        const plans = [];
+        if (/Plan:\s*Pro/i.test(combined) || /Pro and Enterprise/i.test(combined)) plans.push("Pro");
+        if (/Plan:\s*Enterprise/i.test(combined) || /Pro and Enterprise/i.test(combined)) plans.push("Enterprise");
+
+        facts.push({
+          id: "priority",
+          label: `Priority support is available to ${plans.length ? plans.join(" and ") : "the plans named in retrieved context"}.`,
+          supported: hasPrioritySupport,
+          evidenceMatcher: /priority support|Pro|Enterprise/i
+        });
       }
 
-      resetBtn.addEventListener("click", resetOutputs);
-
-      function setFlow(step, state) {
-        const el = document.getElementById("flow" + step);
-        el.classList.remove("active", "done");
-        if (state === "active") el.classList.add("active");
-        if (state === "done") el.classList.add("done");
-      }
-
-      function tokenize(text) {
-        return (text.toLowerCase().match(/[a-z0-9]+/g) || []).filter(Boolean);
-      }
-
-      function sentenceSplit(text) {
-        return text.replace(/\n+/g, " ").split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
-      }
-
-      function chunkText(text, size) {
-        const sentences = sentenceSplit(text);
-        const chunks = [];
-        if (!sentences.length) return [text];
-        for (let i = 0; i < sentences.length; i += size) {
-          chunks.push(sentences.slice(i, i + size).join(" "));
-        }
-        return chunks;
-      }
-
-      function unique(arr) {
-        return [...new Set(arr)];
-      }
-
-      function buildVocabulary(allChunks, question) {
-        return unique([...allChunks.flatMap(c => tokenize(c.text)), ...tokenize(question)])
-          .filter(w => w.length > 2)
-          .slice(0, 64);
-      }
-
-      function makeVector(text, vocabulary) {
-        const tokens = tokenize(text);
-        return vocabulary.map(word => tokens.filter(t => t === word).length);
-      }
-
-      function cosineSimilarity(a, b) {
-        let dot = 0, ma = 0, mb = 0;
-        for (let i = 0; i < a.length; i++) {
-          dot += a[i] * b[i];
-          ma += a[i] * a[i];
-          mb += b[i] * b[i];
-        }
-        if (ma === 0 || mb === 0) return 0;
-        return dot / (Math.sqrt(ma) * Math.sqrt(mb));
-      }
-
-      function topKeywords(text, n = 4) {
-        const counts = {};
-        tokenize(text).filter(w => w.length > 2).forEach(w => counts[w] = (counts[w] || 0) + 1);
-        return Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, n).map(([w]) => w);
-      }
-
-      function simulateRag() {
-        const question = questionInput.value.trim();
-        if (!docs.length) {
-          alert("Please load demo data or add at least one document.");
-          return null;
-        }
-        if (!question) {
-          alert("Please enter a question.");
-          return null;
-        }
-
-        const chunkSize = Number(chunkSizeInput.value);
-        const topK = Number(topKInput.value);
-
-        const allChunks = [];
-        docs.forEach(doc => {
-          chunkText(doc.text, chunkSize).forEach((chunk, idx) => {
-            allChunks.push({
-              docId: doc.id,
-              docTitle: doc.title,
-              indexInDoc: idx + 1,
-              text: chunk
-            });
-          });
+      if (q.includes("refund")) {
+        const m = combined.match(/within\s+(\d+)\s+days/i);
+        facts.push({
+          id: "refund_days",
+          label: m ? `Refunds can be requested within ${m[1]} days of purchase.` : `Refund timing is not clearly supported by retrieved evidence.`,
+          supported: hasRefundDays,
+          evidenceMatcher: /within\s+\d+\s+days/i
         });
 
-        const vocabulary = buildVocabulary(allChunks, question);
-        const questionVector = makeVector(question, vocabulary);
+        facts.push({
+          id: "refund_portal",
+          label: /customer support portal/i.test(combined)
+            ? `Refund requests must be submitted through the customer support portal.`
+            : `Refund submission method is not clearly supported by retrieved evidence.`,
+          supported: hasRefundPortal,
+          evidenceMatcher: /customer support portal/i
+        });
+      }
 
-        const scored = allChunks.map(chunk => {
-          const vector = makeVector(chunk.text, vocabulary);
-          return {
-            ...chunk,
-            vector,
-            score: cosineSimilarity(vector, questionVector),
-            keywords: topKeywords(chunk.text)
-          };
-        }).sort((a,b) => b.score - a.score);
+      if (q.includes("business hours") || q.includes("support hours")) {
+        const m = combined.match(/Monday through Friday,\s*9 AM to 6 PM Eastern Time/i);
+        facts.push({
+          id: "hours",
+          label: m ? `Support business hours are ${m[0]}.` : `Support hours are not clearly supported by retrieved evidence.`,
+          supported: hasBusinessHours,
+          evidenceMatcher: /Monday through Friday,\s*9 AM to 6 PM Eastern Time/i
+        });
+      }
 
-        const retrieved = scored.slice(0, Math.min(topK, scored.length));
+      if (q.includes("users") && q.includes("renewal")) {
+        const userFacts = [];
+        const users = [...combined.matchAll(/User:\s*(.+?)\s+Plan:\s*(.+?)\s+Renewal Date:\s*(.+?)\s+/gis)];
+        users.forEach(match => {
+          const [_, user, plan, renewal] = match;
+          if (/priority support/i.test(match[0])) {
+            userFacts.push(`${user.trim()} (${plan.trim()}) renews on ${renewal.trim()}`);
+          }
+        });
 
-        const augmentedPrompt = [
-          "System: Answer the user using only the retrieved context. If the context is incomplete, say so.",
-          "",
-          "Retrieved context:",
-          ...retrieved.map((r, i) => `[${i+1}] (${r.docTitle} / chunk ${r.indexInDoc}) ${r.text}`),
-          "",
-          `User question: ${question}`,
-          "",
-          "Answer:"
-        ].join("\n");
+        facts.push({
+          id: "renewals",
+          label: userFacts.length
+            ? `Users with priority support and visible renewal dates: ${userFacts.join("; ")}.`
+            : `Renewal dates for users with priority support are not fully supported by retrieved evidence.`,
+          supported: userFacts.length > 0 && hasUserRenewal,
+          evidenceMatcher: /User:|Renewal Date:|priority support/i
+        });
+      }
 
+      if (q.includes("phone number")) {
+        facts.push({
+          id: "phone",
+          label: hasPhone ? `A phone number appears in the retrieved evidence.` : `No phone number is supported by the retrieved evidence.`,
+          supported: hasPhone,
+          evidenceMatcher: /phone|call|telephone/i
+        });
+      }
+
+      return facts;
+    }
+
+    function evaluateSupport(facts) {
+      if (!facts.length) return { label: "Unsupported by design", cls: "unsupported", grounding: 0 };
+      const supportedCount = facts.filter(f => f.supported).length;
+      const ratio = supportedCount / facts.length;
+      if (ratio === 1) return { label: "Fully supported by retrieved evidence", cls: "supported", grounding: 100 };
+      if (ratio > 0) return { label: "Partially supported by retrieved evidence", cls: "partial", grounding: Math.round(ratio * 100) };
+      return { label: "Not supported by retrieved evidence", cls: "unsupported", grounding: 0 };
+    }
+
+    function simulateRag() {
+      const question = questionInput.value.trim();
+      if (!docs.length) {
+        alert("Please load demo data or add at least one document.");
+        return null;
+      }
+      if (!question) {
+        alert("Please enter a question.");
+        return null;
+      }
+
+      const chunkSize = Number(chunkSizeInput.value);
+      const topK = Number(topKInput.value);
+
+      const allChunks = [];
+      docs.forEach(doc => {
+        chunkText(doc.text, chunkSize).forEach((chunk, idx) => {
+          allChunks.push({
+            docId: doc.id,
+            docTitle: doc.title,
+            indexInDoc: idx + 1,
+            text: chunk
+          });
+        });
+      });
+
+      const vocabulary = buildVocabulary(allChunks, question);
+      const questionVector = makeVector(question, vocabulary);
+
+      const scored = allChunks.map(chunk => {
+        const vector = makeVector(chunk.text, vocabulary);
         return {
-          question,
-          allChunks,
-          vocabulary,
-          questionVector,
-          scored,
-          retrieved,
-          augmentedPrompt,
-          noRagAnswer: buildNoRagAnswer(question),
-          withRagAnswer: buildWithRagAnswer(question, retrieved),
-          explanation: buildExplanation(retrieved)
+          ...chunk,
+          vector,
+          score: cosineSimilarity(vector, questionVector),
+          keywords: topKeywords(chunk.text)
         };
-      }
+      }).sort((a,b) => b.score - a.score);
 
-      function buildNoRagAnswer(question) {
-        return `
-          <div class="answer-head">
-            <strong>Generic answer from model memory</strong>
-            <span class="score-bad">Less grounded</span>
-          </div>
-          <div class="highlight">Why this is weaker</div>
-          <div>
-            This answer is not using your actual documents. It sounds plausible, but it is mostly relying on general patterns the model has seen before.
-          </div>
-          <br>
-          <div class="highlight">Example answer</div>
-          <div>
-            Higher-tier plans often include priority support. Refunds are typically allowed for a limited period, and support hours are usually standard business hours. But without retrieving the actual source documents, those exact details cannot be confirmed.
-          </div>
+      const retrieved = scored.slice(0, Math.min(topK, scored.length));
+
+      const augmentedPrompt = [
+        "System: Answer the user using only the retrieved context. If a detail is not supported, say it is not supported.",
+        "",
+        "Retrieved context:",
+        ...retrieved.map((r, i) => `[${i+1}] (${r.docTitle} / chunk ${r.indexInDoc}) ${r.text}`),
+        "",
+        `User question: ${question}`,
+        "",
+        "Answer:"
+      ].join("\n");
+
+      const facts = extractFacts(retrieved, question);
+      const support = evaluateSupport(facts);
+
+      return {
+        question,
+        allChunks,
+        vocabulary,
+        questionVector,
+        scored,
+        retrieved,
+        augmentedPrompt,
+        facts,
+        support
+      };
+    }
+
+    function renderSupportStatus(state) {
+      supportStatusBox.innerHTML = `
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+          <span class="status-pill ${state.support.cls}">${state.support.label}</span>
+          <span class="pill">Grounding score: ${state.support.grounding}%</span>
+        </div>
+        <div class="small">
+          This score reflects how much of the answer can actually be supported by the retrieved evidence.
+        </div>
+      `;
+      mGrounding.textContent = `${state.support.grounding}%`;
+    }
+
+    function renderNoRag(state) {
+      const q = state.question.toLowerCase();
+      let generic = `
+        Without retrieval, the model can only answer from general patterns. It cannot verify exact details from your documents.
+      `;
+
+      if (q.includes("phone number")) {
+        generic = `
+          A typical non-RAG answer would have to say something vague like:
+          "Customer support phone numbers are often listed in a help center or contact page, but I cannot verify one from the available information."
+        `;
+      } else if (q.includes("renewal")) {
+        generic = `
+          A typical non-RAG answer might infer that paid users often have renewals and priority support, but it cannot safely name exact users and dates without retrieved evidence.
+        `;
+      } else {
+        generic = `
+          A typical non-RAG answer would say something like:
+          "Higher-tier plans often have priority support, refunds usually have a time window, and support hours are often standard business hours — but I cannot confirm the exact policy details."
         `;
       }
 
-      function buildWithRagAnswer(question, retrieved) {
-        const combined = retrieved.map(r => r.text).join(" ");
-        const plans = [];
-        if (/Pro/i.test(combined)) plans.push("Pro");
-        if (/Enterprise/i.test(combined)) plans.push("Enterprise");
-        const refundDays = combined.match(/within\s+(\d+)\s+days/i);
-        const hours = combined.match(/Monday through Friday,\s*9 AM to 6 PM Eastern Time/i);
+      noRagBox.innerHTML = `
+        <div class="answer-head">
+          <strong>Without RAG</strong>
+          <span class="score-bad">Generic / less grounded</span>
+        </div>
+        <div class="highlight">What this simulates</div>
+        <div>
+          The model is answering without having the retrieved source chunks in its prompt.
+        </div>
+        <br>
+        <div class="highlight">How it behaves</div>
+        <div>${generic}</div>
+      `;
+    }
 
-        return `
-          <div class="answer-head">
-            <strong>Grounded answer using retrieved evidence</strong>
-            <span class="score-good">More grounded</span>
+    function renderWithRag(state) {
+      const factsHtml = state.facts.length
+        ? state.facts.map((fact, i) => `
+          <div class="ground-line ${fact.supported ? "" : "unsupported-line"}" data-fact-id="${fact.id}">
+            <strong>${fact.supported ? "Supported" : "Not fully supported"}:</strong>
+            ${escapeHtml(fact.label)}
           </div>
-          <div class="highlight">Why this is stronger</div>
-          <div>
-            This answer uses the retrieved chunks from your external documents, so it can be more exact.
-          </div>
-          <br>
-          <div class="highlight">Answer</div>
-          <div>
-            Priority support is available to <strong>${plans.length ? plans.join(" and ") : "the higher-tier plans named in the retrieved chunks"}</strong>.<br>
-            ${refundDays ? `Refunds can be requested <strong>within ${refundDays[1]} days of purchase</strong>.<br>` : ""}
-            Refund requests must be submitted through the <strong>customer support portal</strong>.<br>
-            ${hours ? `Support business hours are <strong>${hours[0]}</strong>.` : ""}
-          </div>
-        `;
-      }
+        `).join("")
+        : `<div class="small">No structured facts were extracted for this question.</div>`;
 
-      function buildExplanation(retrieved) {
-        const sources = [...new Set(retrieved.map(r => r.docTitle))];
-        return `
-          <div class="highlight">What changed because of RAG?</div>
-          <div>
-            The system first searched your documents, found the most relevant chunks, and then gave those chunks to the LLM as context.
-          </div>
-          <br>
-          <div class="highlight">Why this matters</div>
-          <div>
-            The answer with RAG is more trustworthy because it is tied to retrieved evidence from <strong>${escapeHtml(sources.join(", "))}</strong>, rather than only general model memory.
-          </div>
-        `;
-      }
+      withRagBox.innerHTML = `
+        <div class="answer-head">
+          <strong>With RAG</strong>
+          <span class="${state.support.grounding === 100 ? "score-good" : state.support.grounding > 0 ? "score-warn" : "score-bad"}">
+            ${state.support.grounding === 100 ? "Grounded" : state.support.grounding > 0 ? "Partially grounded" : "Not grounded"}
+          </span>
+        </div>
+        <div class="highlight">What this simulates</div>
+        <div>
+          The model is answering after receiving retrieved evidence from the external documents.
+        </div>
+        <br>
+        <div class="highlight">Answer lines</div>
+        ${factsHtml}
+      `;
+    }
 
-      function renderEvidence(retrieved) {
-        evidenceBox.innerHTML = `
-          <div class="evidence-list">
-            ${retrieved.map((r, i) => `
-              <div class="evidence-item">
-                <strong>Evidence ${i + 1} — ${escapeHtml(r.docTitle)} / chunk ${r.indexInDoc}</strong><br>
-                ${escapeHtml(r.text)}
-              </div>
-            `).join("")}
-          </div>
-        `;
-      }
-
-      function renderStep1(state) {
-        setFlow(1, "active");
-        sourceBox.innerHTML = docs.map(doc => `
-          <div class="chunk">
-            <div class="chunk-top">
-              <strong>${escapeHtml(doc.title)}</strong>
-              <span class="pill">${doc.text.length} chars</span>
-            </div>
-            <div>${escapeHtml(doc.text)}</div>
-          </div>
-        `).join("");
-        setFlow(1, "done");
-      }
-
-      function renderStep2(state) {
-        setFlow(2, "active");
-        mChunks.textContent = String(state.allChunks.length);
-        chunkBox.innerHTML = state.allChunks.map((chunk, idx) => `
-          <div class="chunk">
-            <div class="chunk-top">
-              <strong>Chunk ${idx + 1}</strong>
-              <span class="pill">${escapeHtml(chunk.docTitle)}</span>
-            </div>
-            <div>${escapeHtml(chunk.text)}</div>
-          </div>
-        `).join("");
-        setFlow(2, "done");
-      }
-
-      function renderStep3(state) {
-        setFlow(3, "active");
-        vectorBox.innerHTML = `
-          <div class="chunk">
-            <div class="chunk-top">
-              <strong>Question vector (simulated)</strong>
-              <span class="pill">Vocabulary: ${escapeHtml(state.vocabulary.slice(0,8).join(", "))}</span>
-            </div>
-            <div class="vector-grid">
-              ${state.questionVector.slice(0, 24).map(v => `<div class="v">${v}</div>`).join("")}
-            </div>
-          </div>
-          ${state.scored.slice(0, 4).map(chunk => `
-            <div class="chunk">
-              <div class="chunk-top">
-                <strong>${escapeHtml(chunk.docTitle)} / chunk ${chunk.indexInDoc}</strong>
-                <span class="pill">Keywords: ${escapeHtml(chunk.keywords.join(", "))}</span>
-              </div>
-              <div class="vector-grid">
-                ${chunk.vector.slice(0, 24).map(v => `<div class="v">${v}</div>`).join("")}
-              </div>
+    function renderEvidence(state) {
+      evidenceBox.innerHTML = state.retrieved.length ? `
+        <div class="evidence-list">
+          ${state.retrieved.map((r, i) => `
+            <div class="evidence-item" data-evidence-index="${i}" data-text="${escapeHtml(r.text)}">
+              <strong>Evidence ${i+1} — ${escapeHtml(r.docTitle)} / chunk ${r.indexInDoc}</strong><br>
+              ${escapeHtml(r.text)}
             </div>
           `).join("")}
-        `;
-        setFlow(3, "done");
-      }
+        </div>
+      ` : `<span class="empty">No evidence retrieved.</span>`;
 
-      function renderStep4(state) {
-        setFlow(4, "active");
-        mRetrieved.textContent = String(state.retrieved.length);
-        retrieveBox.innerHTML = state.scored.map(chunk => `
+      attachEvidenceInteractions(state);
+    }
+
+    function attachEvidenceInteractions(state) {
+      const lines = withRagBox.querySelectorAll(".ground-line");
+      const evidenceItems = evidenceBox.querySelectorAll(".evidence-item");
+
+      lines.forEach(line => {
+        line.addEventListener("click", () => {
+          lines.forEach(x => x.classList.remove("active"));
+          evidenceItems.forEach(x => x.classList.remove("active"));
+          line.classList.add("active");
+
+          const factId = line.dataset.factId;
+          const fact = state.facts.find(f => f.id === factId);
+          if (!fact) return;
+
+          state.retrieved.forEach((r, idx) => {
+            if (fact.evidenceMatcher && fact.evidenceMatcher.test(r.text)) {
+              const target = evidenceBox.querySelector(`[data-evidence-index="${idx}"]`);
+              if (target) target.classList.add("active");
+            }
+          });
+        });
+      });
+
+      evidenceItems.forEach(item => {
+        item.addEventListener("click", () => {
+          evidenceItems.forEach(x => x.classList.remove("active"));
+          lines.forEach(x => x.classList.remove("active"));
+          item.classList.add("active");
+
+          const text = item.textContent;
+          state.facts.forEach(f => {
+            if (f.evidenceMatcher && f.evidenceMatcher.test(text)) {
+              const line = withRagBox.querySelector(`[data-fact-id="${f.id}"]`);
+              if (line) line.classList.add("active");
+            }
+          });
+        });
+      });
+    }
+
+    function renderExplanation(state) {
+      explainBox.innerHTML = `
+        <strong>Why this comparison is clearer now:</strong><br><br>
+        The “without RAG” side is no longer pretending to know exact facts. It behaves like a model that has no retrieved evidence and therefore cannot verify specifics.<br><br>
+        The “with RAG” side breaks the answer into lines and marks whether each line is actually supported by retrieved evidence.<br><br>
+        That means you can now see three different outcomes:
+        <ul>
+          <li>fully supported answers</li>
+          <li>partially supported answers</li>
+          <li>unsupported questions</li>
+        </ul>
+      `;
+    }
+
+    function renderStep1(state) {
+      setFlow(1, "active");
+      sourceBox.innerHTML = docs.map(doc => `
+        <div class="chunk">
+          <div class="chunk-top">
+            <strong>${escapeHtml(doc.title)}</strong>
+            <span class="pill">${doc.text.length} chars</span>
+          </div>
+          <div>${escapeHtml(doc.text)}</div>
+        </div>
+      `).join("");
+      setFlow(1, "done");
+    }
+
+    function renderStep2(state) {
+      setFlow(2, "active");
+      mChunks.textContent = String(state.allChunks.length);
+      chunkBox.innerHTML = state.allChunks.map((chunk, idx) => `
+        <div class="chunk">
+          <div class="chunk-top">
+            <strong>Chunk ${idx + 1}</strong>
+            <span class="pill">${escapeHtml(chunk.docTitle)}</span>
+          </div>
+          <div>${escapeHtml(chunk.text)}</div>
+        </div>
+      `).join("");
+      setFlow(2, "done");
+    }
+
+    function renderStep3(state) {
+      setFlow(3, "active");
+      vectorBox.innerHTML = `
+        <div class="chunk">
+          <div class="chunk-top">
+            <strong>Question vector (simulated)</strong>
+            <span class="pill">Vocabulary: ${escapeHtml(state.vocabulary.slice(0,8).join(", "))}</span>
+          </div>
+          <div class="vector-grid">
+            ${state.questionVector.slice(0,24).map(v => `<div class="v">${v}</div>`).join("")}
+          </div>
+        </div>
+        ${state.scored.slice(0,4).map(chunk => `
           <div class="chunk">
             <div class="chunk-top">
               <strong>${escapeHtml(chunk.docTitle)} / chunk ${chunk.indexInDoc}</strong>
-              <span class="pill">Similarity ${(chunk.score * 100).toFixed(1)}%</span>
+              <span class="pill">Keywords: ${escapeHtml(chunk.keywords.join(", "))}</span>
             </div>
-            <div>${escapeHtml(chunk.text)}</div>
-            <div class="bar-wrap"><div class="bar" style="width:${Math.max(2, chunk.score * 100)}%"></div></div>
+            <div class="vector-grid">
+              ${chunk.vector.slice(0,24).map(v => `<div class="v">${v}</div>`).join("")}
+            </div>
           </div>
-        `).join("");
-        setFlow(4, "done");
-      }
+        `).join("")}
+      `;
+      setFlow(3, "done");
+    }
 
-      function renderStep5(state) {
-        setFlow(5, "active");
-        mContext.textContent = String(state.retrieved.length);
-        promptBox.textContent = state.augmentedPrompt;
-        setFlow(5, "done");
-      }
+    function renderStep4(state) {
+      setFlow(4, "active");
+      mRetrieved.textContent = String(state.retrieved.length);
+      retrieveBox.innerHTML = state.scored.map(chunk => `
+        <div class="chunk">
+          <div class="chunk-top">
+            <strong>${escapeHtml(chunk.docTitle)} / chunk ${chunk.indexInDoc}</strong>
+            <span class="pill">Similarity ${(chunk.score * 100).toFixed(1)}%</span>
+          </div>
+          <div>${escapeHtml(chunk.text)}</div>
+          <div class="bar-wrap"><div class="bar" style="width:${Math.max(2, chunk.score * 100)}%"></div></div>
+        </div>
+      `).join("");
+      setFlow(4, "done");
+    }
 
-      function renderStep6(state) {
-        setFlow(6, "active");
-        noRagBox.innerHTML = state.noRagAnswer;
-        withRagBox.innerHTML = state.withRagAnswer;
-        renderEvidence(state.retrieved);
-        explainBox.innerHTML = state.explanation;
-        setFlow(6, "done");
-      }
+    function renderStep5(state) {
+      setFlow(5, "active");
+      promptBox.textContent = state.augmentedPrompt;
+      setFlow(5, "done");
+    }
 
-      function runAll() {
-        resetOutputs();
+    function renderStep6(state) {
+      setFlow(6, "active");
+      renderSupportStatus(state);
+      renderNoRag(state);
+      renderWithRag(state);
+      renderEvidence(state);
+      renderExplanation(state);
+      setFlow(6, "done");
+    }
+
+    function runAll() {
+      resetOutputs();
+      currentState = simulateRag();
+      if (!currentState) return;
+      renderStep1(currentState);
+      renderStep2(currentState);
+      renderStep3(currentState);
+      renderStep4(currentState);
+      renderStep5(currentState);
+      renderStep6(currentState);
+    }
+
+    function stepThrough() {
+      if (!currentState) {
         currentState = simulateRag();
         if (!currentState) return;
-        renderStep1(currentState);
-        renderStep2(currentState);
-        renderStep3(currentState);
-        renderStep4(currentState);
-        renderStep5(currentState);
-        renderStep6(currentState);
-        guideIndex = 2;
-        renderGuide();
       }
 
-      function stepThrough() {
-        if (!currentState) {
-          currentState = simulateRag();
-          if (!currentState) return;
-        }
+      simStepIndex += 1;
+      if (simStepIndex === 1) renderStep1(currentState);
+      else if (simStepIndex === 2) renderStep2(currentState);
+      else if (simStepIndex === 3) renderStep3(currentState);
+      else if (simStepIndex === 4) renderStep4(currentState);
+      else if (simStepIndex === 5) renderStep5(currentState);
+      else if (simStepIndex === 6) renderStep6(currentState);
+      else resetOutputs();
+    }
 
-        simStepIndex += 1;
-        if (simStepIndex === 1) renderStep1(currentState);
-        else if (simStepIndex === 2) renderStep2(currentState);
-        else if (simStepIndex === 3) renderStep3(currentState);
-        else if (simStepIndex === 4) renderStep4(currentState);
-        else if (simStepIndex === 5) renderStep5(currentState);
-        else if (simStepIndex === 6) {
-          renderStep6(currentState);
-          guideIndex = 3;
-          renderGuide();
-        } else {
-          resetOutputs();
-        }
-      }
+    runBtn.addEventListener("click", runAll);
+    stepBtn.addEventListener("click", stepThrough);
 
-      runBtn.addEventListener("click", runAll);
-      stepBtn.addEventListener("click", stepThrough);
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-      function escapeHtml(str) {
-        return String(str)
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      updateRangeLabels();
-      renderDocs();
-      renderGuide();
-    </script>
+    updateRangeLabels();
+    renderDocs();
+  </script>
 </body>
 </html>
