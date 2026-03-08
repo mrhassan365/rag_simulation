@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RAG Simulator v2.1 — Guided</title>
+  <title>RAG Simulator v2.2 — Teaching Mode</title>
   <style>
     :root{
       --bg:#0b1020;
@@ -35,22 +35,19 @@
     }
 
     .app{
-      max-width:1520px;
+      max-width:1560px;
       margin:0 auto;
       padding:24px 18px 60px;
     }
 
     .hero{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:18px;
-      flex-wrap:wrap;
+      display:grid;
+      gap:14px;
       margin-bottom:18px;
     }
 
     .hero h1{
-      margin:0 0 8px;
+      margin:0;
       font-size:clamp(28px, 4vw, 46px);
       line-height:1.03;
       letter-spacing:-0.03em;
@@ -59,15 +56,15 @@
     .hero p{
       margin:0;
       color:var(--muted);
-      max-width:900px;
-      line-height:1.5;
+      max-width:980px;
+      line-height:1.55;
+      font-size:15px;
     }
 
     .mini-badges{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      margin-top:12px;
     }
 
     .badge{
@@ -79,14 +76,15 @@
       font-size:12px;
     }
 
-    .layout{
+    .top-teach{
       display:grid;
-      grid-template-columns:430px 1fr;
+      grid-template-columns:1.2fr .8fr;
       gap:18px;
+      margin-bottom:18px;
     }
 
-    @media (max-width:1200px){
-      .layout{grid-template-columns:1fr}
+    @media (max-width:1100px){
+      .top-teach{grid-template-columns:1fr}
     }
 
     .panel{
@@ -118,6 +116,53 @@
 
     .panel-body{padding:16px 18px 18px}
 
+    .teach-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:800px){
+      .teach-grid{grid-template-columns:1fr}
+    }
+
+    .teach-card{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .teach-card h3{
+      margin:0 0 8px;
+      font-size:15px;
+    }
+
+    .teach-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:13px;
+    }
+
+    .teach-card ul{
+      margin:8px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:13px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:430px 1fr;
+      gap:18px;
+    }
+
+    @media (max-width:1200px){
+      .layout{grid-template-columns:1fr}
+    }
+
     .stack{display:grid;gap:14px}
 
     label{
@@ -128,7 +173,7 @@
       color:#dfe7ff;
     }
 
-    textarea, input, select{
+    textarea, input{
       width:100%;
       border:1px solid rgba(255,255,255,.1);
       background:rgba(255,255,255,.04);
@@ -146,7 +191,7 @@
       line-height:1.52;
     }
 
-    textarea:focus, input:focus, select:focus{
+    textarea:focus, input:focus{
       border-color:rgba(124,156,255,.72);
       box-shadow:0 0 0 4px rgba(124,156,255,.15);
       background:rgba(255,255,255,.055);
@@ -307,28 +352,6 @@
       letter-spacing:-0.03em;
     }
 
-    .split{
-      display:grid;
-      grid-template-columns:1fr 380px;
-      gap:18px;
-    }
-
-    @media (max-width:1280px){
-      .split{grid-template-columns:1fr}
-    }
-
-    .section-title{
-      margin:0 0 10px;
-      font-size:15px;
-      letter-spacing:-0.02em;
-    }
-
-    .subtle{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
-    }
-
     .flow{
       display:grid;
       grid-template-columns:repeat(6, 1fr);
@@ -349,7 +372,6 @@
       background:rgba(255,255,255,.03);
       border-radius:16px;
       padding:14px;
-      position:relative;
       min-height:122px;
       transition:.25s ease;
     }
@@ -357,7 +379,6 @@
     .flow-step.active{
       background:linear-gradient(180deg, rgba(124,156,255,.13), rgba(124,156,255,.03));
       border-color:rgba(124,156,255,.35);
-      box-shadow:0 0 0 1px rgba(124,156,255,.15) inset;
     }
 
     .flow-step.done{
@@ -387,6 +408,16 @@
       color:var(--muted);
       font-size:12px;
       line-height:1.45;
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns:1fr 390px;
+      gap:18px;
+    }
+
+    @media (max-width:1280px){
+      .split{grid-template-columns:1fr}
     }
 
     .cards{
@@ -504,13 +535,42 @@
     }
 
     .answer-box{
-      min-height:190px;
+      min-height:220px;
       border:1px solid var(--border);
       background:rgba(255,255,255,.03);
       border-radius:16px;
       padding:14px;
       line-height:1.6;
       font-size:14px;
+    }
+
+    .answer-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      margin-bottom:8px;
+      flex-wrap:wrap;
+    }
+
+    .score-good, .score-bad{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid var(--border);
+    }
+
+    .score-good{
+      background:rgba(52,211,153,.14);
+      color:#b8f4db;
+      border-color:rgba(52,211,153,.35);
+    }
+
+    .score-bad{
+      background:rgba(251,113,133,.12);
+      color:#ffc6d0;
+      border-color:rgba(251,113,133,.28);
     }
 
     .highlight{
@@ -524,19 +584,6 @@
       margin-bottom:8px;
     }
 
-    .legend{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .legend .dot{
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      display:inline-block;
-    }
-
     .small{
       font-size:12px;
       color:var(--muted);
@@ -546,13 +593,6 @@
       color:var(--muted);
       font-size:13px;
       font-style:italic;
-    }
-
-    .footer-note{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5;
     }
 
     .guide{
@@ -673,40 +713,118 @@
       line-height:1.5;
     }
 
-    .teach-card{
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.03);
-      border-radius:16px;
-      padding:14px;
+    .evidence-list{
+      display:grid;
+      gap:10px;
     }
 
-    .teach-card h3{
-      margin:0 0 8px;
-      font-size:15px;
-    }
-
-    .teach-card p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.5;
+    .evidence-item{
+      border:1px solid rgba(52,211,153,.28);
+      background:rgba(52,211,153,.06);
+      border-radius:14px;
+      padding:12px;
       font-size:13px;
+      line-height:1.5;
+    }
+
+    .why-box{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      background:rgba(255,255,255,.03);
+      font-size:13px;
+      line-height:1.55;
+      color:var(--muted);
+    }
+
+    .why-box strong{
+      color:#fff;
+    }
+
+    .section-title{
+      margin:0 0 10px;
+      font-size:15px;
+      letter-spacing:-0.02em;
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="hero">
-      <div>
-        <h1>RAG Simulator v2.1</h1>
-        <p>
-          This version has a built-in practical guide. It teaches you what to click, what to look at, and what each step means while you use it.
-        </p>
-        <div class="mini-badges">
-          <div class="badge">Guided mode built in</div>
-          <div class="badge">Practice mode</div>
-          <div class="badge">Step-by-step teaching</div>
-          <div class="badge">Without RAG vs With RAG</div>
-          <div class="badge">Chunk size + Top-K</div>
+      <h1>RAG Simulator v2.2</h1>
+      <p>
+        This version is designed to maximize understanding. It teaches what RAG is, what it is not, how retrieval changes the answer, and why “with RAG” is more grounded than “without RAG.”
+      </p>
+      <div class="mini-badges">
+        <div class="badge">Stronger teaching content</div>
+        <div class="badge">Evidence-based comparison</div>
+        <div class="badge">Built-in guide</div>
+        <div class="badge">Better without/with RAG clarity</div>
+      </div>
+    </div>
+
+    <div class="top-teach">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>RAG in simple words</h2>
+          <p>Read this once before using the simulator.</p>
+        </div>
+        <div class="panel-body teach-grid">
+          <div class="teach-card">
+            <h3>What RAG is</h3>
+            <p>
+              RAG means the system first looks up relevant information from external knowledge, then gives that information to the LLM as context before the LLM answers.
+            </p>
+          </div>
+          <div class="teach-card">
+            <h3>What RAG is not</h3>
+            <p>
+              RAG is not the LLM magically “knowing” your PDF. The LLM does not directly read the whole knowledge base on every question. The system retrieves only the most relevant chunks first.
+            </p>
+          </div>
+          <div class="teach-card">
+            <h3>The easiest mental model</h3>
+            <p>
+              Think of RAG like an open-book test:
+            </p>
+            <ul>
+              <li>Without RAG = answer from memory</li>
+              <li>With RAG = first open the right pages, then answer</li>
+            </ul>
+          </div>
+          <div class="teach-card">
+            <h3>Why it matters</h3>
+            <p>
+              RAG helps answers become more specific, more grounded, and more tied to your actual documents instead of vague general knowledge.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>What you should notice</h2>
+          <p>The simulator is most useful when you watch for these differences.</p>
+        </div>
+        <div class="panel-body">
+          <div class="teach-card">
+            <h3>Without RAG</h3>
+            <ul>
+              <li>more generic</li>
+              <li>more cautious or vague</li>
+              <li>less tied to your actual source docs</li>
+              <li>can sound reasonable without being exact</li>
+            </ul>
+          </div>
+          <div class="teach-card" style="margin-top:12px;">
+            <h3>With RAG</h3>
+            <ul>
+              <li>more exact</li>
+              <li>grounded in retrieved evidence</li>
+              <li>uses specific details from source docs</li>
+              <li>lets you inspect which chunks supported the answer</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -715,7 +833,7 @@
       <div class="panel">
         <div class="panel-header">
           <h2>Controls</h2>
-          <p>Load demo content, ask a question, and move through the RAG pipeline.</p>
+          <p>Load demo content, ask a question, and inspect the RAG pipeline.</p>
         </div>
         <div class="panel-body stack">
           <div>
@@ -730,7 +848,7 @@
                 <span class="value" id="chunkSizeValue">2 sentences</span>
               </div>
               <input id="chunkSize" type="range" min="1" max="4" step="1" value="2" />
-              <div class="small">How many sentences go into each chunk.</div>
+              <div class="small">Larger chunks give more context. Smaller chunks can retrieve more precisely.</div>
             </div>
 
             <div class="range-wrap">
@@ -739,7 +857,7 @@
                 <span class="value" id="topKValue">3 chunks</span>
               </div>
               <input id="topK" type="range" min="1" max="5" step="1" value="3" />
-              <div class="small">How many chunks get inserted into the prompt.</div>
+              <div class="small">This controls how many retrieved chunks get inserted into the prompt.</div>
             </div>
           </div>
 
@@ -770,13 +888,6 @@
             <button class="secondary" id="newDocBtn">New document</button>
             <button class="secondary" id="deleteDocBtn">Delete selected</button>
           </div>
-
-          <div class="teach-card">
-            <h3>Fastest way to understand RAG</h3>
-            <p>
-              First load demo data. Then run the simulation. Then compare the answer without RAG versus the answer with RAG. After that, look at retrieval results and augmented prompt.
-            </p>
-          </div>
         </div>
       </div>
 
@@ -784,7 +895,7 @@
         <div class="panel">
           <div class="panel-header">
             <h2>Pipeline overview</h2>
-            <p>Each step lights up as the simulation runs.</p>
+            <p>These are the main stages of RAG. Watch them light up as the simulation runs.</p>
           </div>
           <div class="panel-body">
             <div class="flow">
@@ -796,27 +907,27 @@
               <div class="flow-step" id="flow2">
                 <div class="flow-num">2</div>
                 <h3>Chunking</h3>
-                <p>Docs split into smaller pieces.</p>
+                <p>Long docs are split into smaller searchable pieces.</p>
               </div>
               <div class="flow-step" id="flow3">
                 <div class="flow-num">3</div>
                 <h3>Embeddings</h3>
-                <p>Chunks become searchable vectors.</p>
+                <p>Chunks become searchable numeric representations.</p>
               </div>
               <div class="flow-step" id="flow4">
                 <div class="flow-num">4</div>
                 <h3>Retrieve</h3>
-                <p>Best chunks are selected at query time.</p>
+                <p>The best matching chunks are selected.</p>
               </div>
               <div class="flow-step" id="flow5">
                 <div class="flow-num">5</div>
                 <h3>Augment prompt</h3>
-                <p>Retrieved context is inserted into the prompt.</p>
+                <p>The selected chunks are inserted into the prompt.</p>
               </div>
               <div class="flow-step" id="flow6">
                 <div class="flow-num">6</div>
                 <h3>Generate</h3>
-                <p>The LLM answers using that context.</p>
+                <p>The LLM answers using retrieved context.</p>
               </div>
             </div>
           </div>
@@ -853,13 +964,13 @@
           <div class="panel">
             <div class="panel-header">
               <h2>Simulator output</h2>
-              <p>Use this to inspect what the system is doing internally.</p>
+              <p>This shows what the system is doing internally.</p>
             </div>
             <div class="panel-body cards">
               <div class="card">
                 <div class="card-header">
                   <strong>1. Source documents</strong>
-                  <span class="small">What came into the system</span>
+                  <span class="small">External knowledge provided to the system</span>
                 </div>
                 <div class="card-body codeish" id="sourceBox"><span class="empty">Run the simulator to see source documents.</span></div>
               </div>
@@ -867,7 +978,7 @@
               <div class="card">
                 <div class="card-header">
                   <strong>2. Chunks</strong>
-                  <span class="small">Smaller retrievable pieces</span>
+                  <span class="small">The retrievable pieces</span>
                 </div>
                 <div class="card-body codeish" id="chunkBox"><span class="empty">Chunks will appear here.</span></div>
               </div>
@@ -875,7 +986,7 @@
               <div class="card">
                 <div class="card-header">
                   <strong>3. Embeddings (simulated)</strong>
-                  <span class="small">Searchable numeric representations</span>
+                  <span class="small">How chunks become searchable</span>
                 </div>
                 <div class="card-body" id="vectorBox"><span class="empty">Vectors will appear here.</span></div>
               </div>
@@ -891,7 +1002,7 @@
               <div class="card">
                 <div class="card-header">
                   <strong>5. Augmented prompt</strong>
-                  <span class="small">Prompt sent to the LLM</span>
+                  <span class="small">What the LLM actually receives</span>
                 </div>
                 <div class="card-body codeish" id="promptBox"><span class="empty">Augmented prompt will appear here.</span></div>
               </div>
@@ -899,14 +1010,9 @@
               <div class="card">
                 <div class="card-header">
                   <strong>6. Answer comparison</strong>
-                  <span class="small">See the value of RAG clearly</span>
+                  <span class="small">This is where the value of RAG becomes obvious</span>
                 </div>
                 <div class="card-body">
-                  <div class="legend" style="margin-bottom:12px;">
-                    <div class="pill"><span class="dot" style="background:var(--bad)"></span> Without RAG = generic</div>
-                    <div class="pill"><span class="dot" style="background:var(--good)"></span> With RAG = grounded</div>
-                  </div>
-
                   <div class="compare">
                     <div>
                       <div class="section-title">Without RAG</div>
@@ -919,7 +1025,12 @@
                   </div>
 
                   <div style="margin-top:18px;">
-                    <div class="section-title">Why the RAG answer is better</div>
+                    <div class="section-title">Evidence supporting the RAG answer</div>
+                    <div class="answer-box" id="evidenceBox"><span class="empty">Retrieved evidence will appear here.</span></div>
+                  </div>
+
+                  <div style="margin-top:18px;">
+                    <div class="section-title">Why the difference matters</div>
                     <div class="answer-box" id="explainBox"><span class="empty">The explanation will appear here.</span></div>
                   </div>
                 </div>
@@ -934,15 +1045,15 @@
                 <span class="guide-step" id="guideStepBadge">Step 1 of 5</span>
               </div>
               <p id="guideText">
-                Click <strong>Load demo data</strong> first. That gives you example source documents and a question so you can focus on understanding the RAG process.
+                Click <strong>Load demo data</strong>. This gives you multiple source documents plus a question, so you can focus on learning RAG instead of writing content first.
               </p>
 
               <div class="guide-box">
                 <h4>What to do now</h4>
                 <ul id="guideTodo">
                   <li>Click Load demo data.</li>
-                  <li>Read the question field.</li>
-                  <li>Notice there are multiple documents loaded.</li>
+                  <li>Look at the documents.</li>
+                  <li>Read the question.</li>
                 </ul>
               </div>
 
@@ -966,21 +1077,22 @@
                 <span class="guide-step">Current teaching</span>
               </div>
               <p id="whatYouSee">
-                This simulator shows both the inside of the RAG pipeline and the final answer comparison.
+                You are looking at a simulator that shows both the inside of the RAG pipeline and the resulting answer difference.
               </p>
               <div class="takeaway" id="takeawayBox">
-                Key takeaway: RAG works by retrieving relevant external context first, then giving that context to the LLM before it answers.
+                Key takeaway: RAG means retrieve relevant external context first, then let the LLM answer using that context.
               </div>
             </div>
 
             <div class="guide-card">
               <div class="guide-title">
-                <strong>Practice mode</strong>
-                <span class="guide-step">Try it yourself</span>
+                <strong>Most important difference</strong>
+                <span class="guide-step">Remember this</span>
               </div>
-              <p>
-                After the demo makes sense, replace the docs with your own text. Then ask a question. Watch which chunks are retrieved and how that changes the answer.
-              </p>
+              <div class="why-box">
+                <strong>Without RAG:</strong> the answer mostly comes from general model memory.<br><br>
+                <strong>With RAG:</strong> the answer is based on retrieved evidence from your external documents.
+              </div>
             </div>
           </div>
         </div>
@@ -1014,6 +1126,7 @@
 
       const noRagBox = document.getElementById("noRagBox");
       const withRagBox = document.getElementById("withRagBox");
+      const evidenceBox = document.getElementById("evidenceBox");
       const explainBox = document.getElementById("explainBox");
 
       const mDocs = document.getElementById("mDocs");
@@ -1090,58 +1203,38 @@ Escalations may be routed to specialist teams depending on plan type and issue s
       const guideSteps = [
         {
           title: "Step 1 of 5",
-          text: "Click Load demo data first. That gives you source documents and a question so you can focus on the RAG process itself.",
-          todo: [
-            "Click Load demo data.",
-            "Read the question field.",
-            "Notice there are multiple documents loaded."
-          ],
-          see: "You are looking at the input side of RAG: the user question plus external data sources.",
-          takeaway: "Key takeaway: RAG starts with external knowledge such as PDFs, docs, databases, or APIs."
+          text: "Load the demo first. That gives you external data sources and a question.",
+          todo: ["Click Load demo data.", "Read the question.", "See that RAG starts with external knowledge."],
+          see: "You are looking at the input to RAG: a user question plus external sources.",
+          takeaway: "Key takeaway: RAG begins with external knowledge, not just the model’s memory."
         },
         {
           title: "Step 2 of 5",
-          text: "Now run the full simulation. This will populate every stage so you can see the whole RAG pipeline at once.",
-          todo: [
-            "Click Run full simulation.",
-            "Watch the pipeline steps light up.",
-            "Look at the answer comparison near the bottom."
-          ],
-          see: "You are seeing the whole lifecycle: source docs, chunking, embeddings, retrieval, prompt augmentation, and answer generation.",
-          takeaway: "Key takeaway: RAG is not just attaching data. It retrieves the most relevant pieces at query time."
+          text: "Run the simulation. This will fill every stage of the pipeline.",
+          todo: ["Click Run full simulation.", "Watch the pipeline light up.", "Scroll to answer comparison."],
+          see: "You are seeing the full RAG lifecycle from documents to final answer.",
+          takeaway: "Key takeaway: the retrieval step happens before the LLM answers."
         },
         {
           title: "Step 3 of 5",
-          text: "Look closely at Retrieval results and Augmented prompt. These are the two most important internal views for understanding how RAG works.",
-          todo: [
-            "Find the Retrieval results section.",
-            "See which chunks scored highest.",
-            "Then look at the Augmented prompt section."
-          ],
-          see: "Retrieval results show which chunks matched the question. The augmented prompt shows those chunks being inserted as context for the LLM.",
-          takeaway: "Key takeaway: the LLM does not search the full documents directly. It gets only the retrieved chunks."
+          text: "Inspect Retrieval results and Augmented prompt. These two sections explain most of RAG.",
+          todo: ["Find Retrieval results.", "See which chunks scored highest.", "Open the Augmented prompt."],
+          see: "Retrieval shows what was selected. The augmented prompt shows what the LLM actually got.",
+          takeaway: "Key takeaway: the LLM answers from retrieved chunks, not from the full raw documents."
         },
         {
           title: "Step 4 of 5",
-          text: "Compare Without RAG and With RAG. This is the simplest practical proof of why RAG matters.",
-          todo: [
-            "Read the Without RAG answer.",
-            "Read the With RAG answer.",
-            "Read the explanation below them."
-          ],
-          see: "Without RAG, the answer is more generic. With RAG, the answer is grounded in the retrieved evidence.",
-          takeaway: "Key takeaway: RAG helps the model answer using your external knowledge, not just general memory."
+          text: "Compare Without RAG and With RAG carefully.",
+          todo: ["Read the generic answer.", "Read the grounded answer.", "Look at the evidence box."],
+          see: "The grounded answer should be more exact because it is tied to retrieved evidence.",
+          takeaway: "Key takeaway: with RAG, you can inspect what evidence supported the answer."
         },
         {
           title: "Step 5 of 5",
-          text: "Now experiment. Change chunk size or top-K and run again. Then replace the demo docs with your own text and see how retrieval changes.",
-          todo: [
-            "Move the Chunk size slider.",
-            "Move the Top-K slider.",
-            "Run again and observe what changes."
-          ],
-          see: "Chunk size affects how documents are split. Top-K affects how many chunks are sent into the prompt.",
-          takeaway: "Key takeaway: RAG quality depends heavily on chunking and retrieval strategy, not just the LLM."
+          text: "Experiment with chunk size and top-K, then try your own documents.",
+          todo: ["Change chunk size.", "Change top-K.", "Run again and compare retrieval quality."],
+          see: "Chunking and retrieval strategy heavily influence answer quality.",
+          takeaway: "Key takeaway: good RAG is not only about the LLM — retrieval quality matters a lot."
         }
       ];
 
@@ -1158,7 +1251,7 @@ Escalations may be routed to specialist teams depending on plan type and issue s
       function renderGuide() {
         const step = guideSteps[guideIndex];
         guideStepBadge.textContent = step.title;
-        guideText.innerHTML = step.text;
+        guideText.textContent = step.text;
         guideTodo.innerHTML = step.todo.map(item => `<li>${item}</li>`).join("");
         whatYouSee.textContent = step.see;
         takeawayBox.textContent = step.takeaway;
@@ -1172,7 +1265,7 @@ Escalations may be routed to specialist teams depending on plan type and issue s
           return `
             <div class="check ${done ? "done" : ""}">
               <div class="dot">${done ? "✓" : current ? "•" : index + 1}</div>
-              <div>${step.title.replace(" of 5","")}</div>
+              <div>${step.title}</div>
             </div>
           `;
         }).join("");
@@ -1206,7 +1299,7 @@ Escalations may be routed to specialist teams depending on plan type and issue s
                 <div class="doc-card-title">${escapeHtml(doc.title)}</div>
                 <div class="doc-meta">${doc.text.length} characters</div>
               </div>
-              <button class="secondary" data-id="${doc.id}">Select</button>
+              <button class="secondary">Select</button>
             </div>
             <div class="small">${escapeHtml(doc.text.slice(0, 120))}${doc.text.length > 120 ? "..." : ""}</div>
           `;
@@ -1234,7 +1327,6 @@ Escalations may be routed to specialist teams depending on plan type and issue s
       function saveDoc() {
         const title = docTitleInput.value.trim();
         const text = docTextInput.value.trim();
-
         if (!title || !text) {
           alert("Please enter both a document title and document text.");
           return;
@@ -1247,11 +1339,7 @@ Escalations may be routed to specialist teams depending on plan type and issue s
             doc.text = text;
           }
         } else {
-          const newDoc = {
-            id: crypto.randomUUID(),
-            title,
-            text
-          };
+          const newDoc = { id: crypto.randomUUID(), title, text };
           docs.push(newDoc);
           selectedDocId = newDoc.id;
         }
@@ -1297,13 +1385,13 @@ Escalations may be routed to specialist teams depending on plan type and issue s
         promptBox.innerHTML = `<span class="empty">Augmented prompt will appear here.</span>`;
         noRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
         withRagBox.innerHTML = `<span class="empty">Run the simulator to compare answers.</span>`;
+        evidenceBox.innerHTML = `<span class="empty">Retrieved evidence will appear here.</span>`;
         explainBox.innerHTML = `<span class="empty">The explanation will appear here.</span>`;
         mChunks.textContent = "0";
         mRetrieved.textContent = "0";
         mContext.textContent = "0";
         for (let i = 1; i <= 6; i++) {
-          const el = document.getElementById("flow" + i);
-          el.classList.remove("active", "done");
+          document.getElementById("flow" + i).classList.remove("active", "done");
         }
       }
 
@@ -1321,11 +1409,7 @@ Escalations may be routed to specialist teams depending on plan type and issue s
       }
 
       function sentenceSplit(text) {
-        return text
-          .replace(/\n+/g, " ")
-          .split(/(?<=[.!?])\s+/)
-          .map(s => s.trim())
-          .filter(Boolean);
+        return text.replace(/\n+/g, " ").split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
       }
 
       function chunkText(text, size) {
@@ -1364,16 +1448,10 @@ Escalations may be routed to specialist teams depending on plan type and issue s
         return dot / (Math.sqrt(ma) * Math.sqrt(mb));
       }
 
-      function topKeywords(text, n = 5) {
+      function topKeywords(text, n = 4) {
         const counts = {};
-        tokenize(text)
-          .filter(w => w.length > 2)
-          .forEach(w => counts[w] = (counts[w] || 0) + 1);
-
-        return Object.entries(counts)
-          .sort((a,b) => b[1] - a[1])
-          .slice(0, n)
-          .map(([w]) => w);
+        tokenize(text).filter(w => w.length > 2).forEach(w => counts[w] = (counts[w] || 0) + 1);
+        return Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, n).map(([w]) => w);
       }
 
       function simulateRag() {
@@ -1392,12 +1470,10 @@ Escalations may be routed to specialist teams depending on plan type and issue s
 
         const allChunks = [];
         docs.forEach(doc => {
-          const chunks = chunkText(doc.text, chunkSize);
-          chunks.forEach((chunk, idx) => {
+          chunkText(doc.text, chunkSize).forEach((chunk, idx) => {
             allChunks.push({
               docId: doc.id,
               docTitle: doc.title,
-              chunkId: `${doc.id}-${idx + 1}`,
               indexInDoc: idx + 1,
               text: chunk
             });
@@ -1409,12 +1485,11 @@ Escalations may be routed to specialist teams depending on plan type and issue s
 
         const scored = allChunks.map(chunk => {
           const vector = makeVector(chunk.text, vocabulary);
-          const score = cosineSimilarity(vector, questionVector);
           return {
             ...chunk,
             vector,
-            score,
-            keywords: topKeywords(chunk.text, 4)
+            score: cosineSimilarity(vector, questionVector),
+            keywords: topKeywords(chunk.text)
           };
         }).sort((a,b) => b.score - a.score);
 
@@ -1424,74 +1499,99 @@ Escalations may be routed to specialist teams depending on plan type and issue s
           "System: Answer the user using only the retrieved context. If the context is incomplete, say so.",
           "",
           "Retrieved context:",
-          ...retrieved.map((r, i) => `[${i + 1}] (${r.docTitle} / chunk ${r.indexInDoc}) ${r.text}`),
+          ...retrieved.map((r, i) => `[${i+1}] (${r.docTitle} / chunk ${r.indexInDoc}) ${r.text}`),
           "",
           `User question: ${question}`,
           "",
           "Answer:"
         ].join("\n");
 
-        const noRagAnswer = generateNoRagAnswer(question);
-        const withRagAnswer = generateWithRagAnswer(question, retrieved);
-        const explanation = generateComparisonExplanation(retrieved);
-
         return {
           question,
-          chunkSize,
-          topK,
           allChunks,
           vocabulary,
           questionVector,
           scored,
           retrieved,
           augmentedPrompt,
-          noRagAnswer,
-          withRagAnswer,
-          explanation
+          noRagAnswer: buildNoRagAnswer(question),
+          withRagAnswer: buildWithRagAnswer(question, retrieved),
+          explanation: buildExplanation(retrieved)
         };
       }
 
-      function generateNoRagAnswer(question) {
+      function buildNoRagAnswer(question) {
         return `
-<span class="highlight">Typical non-RAG behavior</span><br>
-This answer is generic because the model is not using your specific source documents.
-
-Question: ${escapeHtml(question)}
-
-Possible answer:
-Higher-tier plans often have priority support, refunds are usually limited to a set time period, and support hours are commonly standard business hours. But without retrieving the actual source documents, those details cannot be confirmed exactly.
-        `.trim();
+          <div class="answer-head">
+            <strong>Generic answer from model memory</strong>
+            <span class="score-bad">Less grounded</span>
+          </div>
+          <div class="highlight">Why this is weaker</div>
+          <div>
+            This answer is not using your actual documents. It sounds plausible, but it is mostly relying on general patterns the model has seen before.
+          </div>
+          <br>
+          <div class="highlight">Example answer</div>
+          <div>
+            Higher-tier plans often include priority support. Refunds are typically allowed for a limited period, and support hours are usually standard business hours. But without retrieving the actual source documents, those exact details cannot be confirmed.
+          </div>
+        `;
       }
 
-      function generateWithRagAnswer(question, retrieved) {
+      function buildWithRagAnswer(question, retrieved) {
         const combined = retrieved.map(r => r.text).join(" ");
-        const matches = [];
-        if (/Pro/i.test(combined)) matches.push("Pro");
-        if (/Enterprise/i.test(combined)) matches.push("Enterprise");
+        const plans = [];
+        if (/Pro/i.test(combined)) plans.push("Pro");
+        if (/Enterprise/i.test(combined)) plans.push("Enterprise");
         const refundDays = combined.match(/within\s+(\d+)\s+days/i);
         const hours = combined.match(/Monday through Friday,\s*9 AM to 6 PM Eastern Time/i);
 
         return `
-<span class="highlight">Grounded answer using retrieved context</span><br>
-Priority support is available to <strong>${matches.length ? matches.join(" and ") : "the plans named in the retrieved context"}</strong>.<br>
-${refundDays ? `Refunds can be requested <strong>within ${refundDays[1]} days of purchase</strong>.<br>` : ""}
-Refund requests must be submitted through the <strong>customer support portal</strong>.<br>
-${hours ? `Support business hours are <strong>${hours[0]}</strong>.` : ""}
-        `.trim();
+          <div class="answer-head">
+            <strong>Grounded answer using retrieved evidence</strong>
+            <span class="score-good">More grounded</span>
+          </div>
+          <div class="highlight">Why this is stronger</div>
+          <div>
+            This answer uses the retrieved chunks from your external documents, so it can be more exact.
+          </div>
+          <br>
+          <div class="highlight">Answer</div>
+          <div>
+            Priority support is available to <strong>${plans.length ? plans.join(" and ") : "the higher-tier plans named in the retrieved chunks"}</strong>.<br>
+            ${refundDays ? `Refunds can be requested <strong>within ${refundDays[1]} days of purchase</strong>.<br>` : ""}
+            Refund requests must be submitted through the <strong>customer support portal</strong>.<br>
+            ${hours ? `Support business hours are <strong>${hours[0]}</strong>.` : ""}
+          </div>
+        `;
       }
 
-      function generateComparisonExplanation(retrieved) {
+      function buildExplanation(retrieved) {
         const sources = [...new Set(retrieved.map(r => r.docTitle))];
         return `
-<span class="highlight">Why the RAG answer is better</span><br>
-The RAG answer is better because it is grounded in retrieved evidence from <strong>${escapeHtml(sources.join(", "))}</strong>.<br><br>
-The system did four important things:
-<br>
-1. searched the external documents at query time<br>
-2. retrieved the most relevant chunks<br>
-3. injected those chunks into the prompt<br>
-4. answered from that retrieved context
-        `.trim();
+          <div class="highlight">What changed because of RAG?</div>
+          <div>
+            The system first searched your documents, found the most relevant chunks, and then gave those chunks to the LLM as context.
+          </div>
+          <br>
+          <div class="highlight">Why this matters</div>
+          <div>
+            The answer with RAG is more trustworthy because it is tied to retrieved evidence from <strong>${escapeHtml(sources.join(", "))}</strong>, rather than only general model memory.
+          </div>
+        `;
+      }
+
+      function renderEvidence(retrieved) {
+        evidenceBox.innerHTML = `
+          <div class="evidence-list">
+            ${retrieved.map((r, i) => `
+              <div class="evidence-item">
+                <strong>Evidence ${i + 1} — ${escapeHtml(r.docTitle)} / chunk ${r.indexInDoc}</strong><br>
+                ${escapeHtml(r.text)}
+              </div>
+            `).join("")}
+          </div>
+        `;
       }
 
       function renderStep1(state) {
@@ -1535,7 +1635,7 @@ The system did four important things:
               ${state.questionVector.slice(0, 24).map(v => `<div class="v">${v}</div>`).join("")}
             </div>
           </div>
-          ${state.scored.slice(0, Math.min(4, state.scored.length)).map(chunk => `
+          ${state.scored.slice(0, 4).map(chunk => `
             <div class="chunk">
               <div class="chunk-top">
                 <strong>${escapeHtml(chunk.docTitle)} / chunk ${chunk.indexInDoc}</strong>
@@ -1577,6 +1677,7 @@ The system did four important things:
         setFlow(6, "active");
         noRagBox.innerHTML = state.noRagAnswer;
         withRagBox.innerHTML = state.withRagAnswer;
+        renderEvidence(state.retrieved);
         explainBox.innerHTML = state.explanation;
         setFlow(6, "done");
       }
@@ -1602,7 +1703,6 @@ The system did four important things:
         }
 
         simStepIndex += 1;
-
         if (simStepIndex === 1) renderStep1(currentState);
         else if (simStepIndex === 2) renderStep2(currentState);
         else if (simStepIndex === 3) renderStep3(currentState);
